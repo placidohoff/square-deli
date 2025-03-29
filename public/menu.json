@@ -1,0 +1,108 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "Classic Reuben",
+      "image": "reuben.jpg",
+      "description": "Corned beef, Swiss cheese, sauerkraut, and Russian dressing on rye bread",
+      "prices": {
+        "small": 9.99,
+        "large": 12.99
+      }
+    },
+    {
+      "id": 2,
+      "name": "Turkey Club",
+      "image": "club.jpg",
+      "description": "Roasted turkey, bacon, lettuce, tomato, and mayo on toasted multigrain",
+      "prices": 8.99
+    },
+    {
+      "id": 3,
+      "name": "Vegetarian Wrap",
+      "image": "wrap.jpg",
+      "description": "Grilled vegetables, hummus, and feta in a spinach tortilla",
+      "prices": {
+        "regular": 10.49
+      }
+    },
+    {
+      "id": 4,
+      "name": "Italian Sub",
+      "image": "italian.jpg",
+      "description": "Salami, capicola, pepperoni, provolone, lettuce, tomato, and Italian dressing",
+      "prices": {
+        "half": 7.99,
+        "whole": 13.99
+      }
+    },
+    {
+      "id": 5,
+      "name": "Philly Cheesesteak",
+      "image": "philly.jpg",
+      "description": "Shaved steak, caramelized onions, and melted cheese on a hoagie roll",
+      "prices": 11.99
+    },
+    {
+      "id": 6,
+      "name": "BBQ Chicken",
+      "image": "bbq.jpg",
+      "description": "Grilled chicken, bacon, cheddar, and BBQ sauce on a brioche bun",
+      "prices": {
+        "regular": 10.99,
+        "large": 14.99
+      }
+    },
+    {
+      "id": 7,
+      "name": "Caprese Panini",
+      "image": "caprese.jpg",
+      "description": "Fresh mozzarella, tomatoes, basil pesto, and balsamic glaze on ciabatta",
+      "prices": 9.49
+    },
+    {
+      "id": 8,
+      "name": "Tuna Melt",
+      "image": "tuna.jpg",
+      "description": "Albacore tuna salad with melted Swiss cheese on sourdough",
+      "prices": {
+        "small": 8.49,
+        "large": 11.49
+      }
+    },
+    {
+      "id": 9,
+      "name": "Cubano",
+      "image": "cubano.jpg",
+      "description": "Roast pork, ham, Swiss cheese, pickles, and mustard on pressed Cuban bread",
+      "prices": 12.49
+    },
+    {
+      "id": 10,
+      "name": "Buffalo Chicken",
+      "image": "buffalo.jpg",
+      "description": "Crispy chicken tossed in buffalo sauce with blue cheese slaw",
+      "prices": {
+        "regular": 10.99,
+        "large": 13.99
+      }
+    },
+    {
+      "id": 11,
+      "name": "Veggie Burger",
+      "image": "veggie-burger.jpg",
+      "description": "House-made black bean patty with avocado and chipotle mayo",
+      "prices": 11.99
+    },
+    {
+      "id": 12,
+      "name": "Pastrami Special",
+      "image": "pastrami.jpg",
+      "description": "Smoked pastrami, coleslaw, and Russian dressing on marble rye",
+      "prices": {
+        "small": 10.49,
+        "large": 13.99
+      }
+    }
+  ]
+}
