@@ -1,5 +1,5 @@
 {
-  "items": [
+  "sandwiches": [
     {
       "id": 1,
       "name": "Classic Reuben",
@@ -104,5 +104,55 @@
         "large": 13.99
       }
     }
+  ],
+  "chickenWings": [
+    {"name": "Classic Buffalo", "price": 9.99},
+    {"name": "BBQ", "price": 10.99},
+    {"name": "Honey Garlic", "price": 10.99},
+    {"name": "Lemon Pepper", "price": 10.99}
+  ],
+  "pizza": [
+    {"name": "Pepperoni", "price": 14.99},
+    {"name": "Supreme", "price": 16.99},
+    {"name": "Hawaiian", "price": 15.99},
+    {"name": "Meat Lovers", "price": 17.99}
+  ],
+  "empanadas": [
+    {"name": "Beef", "price": 3.50},
+    {"name": "Chicken", "price": 3.50},
+    {"name": "Cheese", "price": 3.00},
+    {"name": "Vegetable", "price": 3.00}
+  ],
+  "yaroas": [
+    {"name": "Classic Yaroa", "price": 10.99},
+    {"name": "Chicken Yaroa", "price": 12.99},
+    {"name": "Pork Yaroa", "price": 11.99}
+  ],
+  "freshJuices": [
+    {"name": "Orange", "price": 4.99},
+    {"name": "Pineapple", "price": 4.99},
+    {"name": "Mango", "price": 5.99},
+    {"name": "Passion Fruit", "price": 5.99}
+  ],
+  "chilliDogs": [
+    {"name": "Classic Chili Dog", "price": 6.99},
+    {"name": "Bacon Chili Dog", "price": 7.99},
+    {"name": "Double Meat Chili Dog", "price": 8.99}
+  ],
+  "sides": [
+    {"name": "French Fries", "price": 3.99},
+    {"name": "Sweet Potato Fries", "price": 4.99},
+    {"name": "Onion Rings", "price": 4.50},
+    {"name": "Coleslaw", "price": 2.99}
+  ],
+  
+  "desserts": [
+    {"name": "Cheesecake", "price": 5.99},
+    {"name": "Chocolate Cake", "price": 5.99},
+    {"name": "Flan", "price": 4.99},
+    {"name": "Tres Leches", "price": 6.99}
   ]
+    
+    
+  
 }

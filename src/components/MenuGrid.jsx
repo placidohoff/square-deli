@@ -9,7 +9,7 @@ const MenuGrid = () => {
       .then(response => response.json())
       .then(data => {
         console.log('Fetched data:', data); // Debugging: Check the response
-        setMenuItems(Array.isArray(data.items) ? data.items : []); // Ensure it's an array
+        setMenuItems(Array.isArray(data.sandwiches) ? data.sandwiches : []); // Ensure it's an array
       })
       .catch(error => console.error('Error fetching menu:', error));
   }, []);
