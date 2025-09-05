@@ -1,7 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+.editItemForm{
+  margin-bottom: 5px;
+  max-width: 700px;
+}
+
+.editItemForm > input,
+.editItemForm > textarea {
+  width: 100%;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.priceEditInput{
+  max-width: 150px;
+  /* text-align: center; */
+}
+
+.editShowItem{
+  max-width: 700px;
+  cursor: default;
+}
+
+.anton {
+  font-family: 'Anton', sans-serif;
+}
+
+.disclaimer{
+  font-weight: bold;
+}
+
+ul{
+  list-style: none;
+}
+
+.background-wrapper {
+  position: relative;
+  z-index: 0;
+  min-height: 100vh; /* Fill the full height */
+}
+
+.background-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/square-deli-grill-logo.png');
+  background-size: 1000px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  opacity: 0.15;
+  z-index: -1;
+}
 #root {
   width: 100%;
   margin: 0 auto;
   /* text-align: center; */
+  position: absolute;
+  top: 0;
 }
 
 .logo {
@@ -32,6 +87,22 @@
   }
 }
 
+/* .title {
+  font-family: 'Pelikan', sans-serif; 
+  text-transform: uppercase;
+  font-size: 2rem;
+  font-weight: bold;
+} */
+
+.title{
+  color: #A96B92;
+}
+
+.title::first-letter {
+  /* initial-letter: 2;
+  font-weight: bold; */
+}
+
 .card {
   padding: 2em;
 }
@@ -45,4 +116,83 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 3 columns */
   gap: 20px;
   justify-content: center;
+}
+
+
+
+.deli-menu-container {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  height: 88vh;
+}
+
+.column {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.menu-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: x-large;
+  font-weight: bold;
+  border-bottom: 1px solid;
+  padding: 6px;
+  /* color: #DF9245; */
+  color: #CE5D2A;
+}
+
+.item-name {
+  white-space: nowrap;
+}
+
+.item-price {
+  white-space: nowrap;
+  margin-left: 0.5rem;
+}
+
+.dots{
+  flex-grow: 1;
+  margin: 0 0.5rem;
+  overflow: hidden;
+  position: relative;
+  height: 1em;
+}
+
+.dots::before {
+  content: '····················································';
+  letter-spacing: 0.3em;
+  white-space: nowrap;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+
+.sandwich-desc{
+  color: #D1591C !important;
 }

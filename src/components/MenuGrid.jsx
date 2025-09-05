@@ -5,7 +5,8 @@ const MenuGrid = () => {
   const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
-    fetch('/menu.json')
+    // fetch('/menu.json')
+    fetch('http://localhost:5000/menu')
       .then(response => response.json())
       .then(data => {
         console.log('Fetched data:', data); // Debugging: Check the response

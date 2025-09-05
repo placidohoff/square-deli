@@ -1,0 +1,299 @@
+{
+  "sandwiches": [
+    {
+      "id": 1,
+      "name": "Chopped Cheese",
+      "image": "chopped.png",
+      "description": "American yellow cheese, lettuce, tomatoes, grilled onions, chimi sauce",
+      "prices": 9.99
+    },
+    {
+      "id": 2,
+      "name": "Burger Steakhouse",
+      "image": "burger-steak.png",
+      "description": "Lettuce, tomatoes, grilled onions, mayonnaise ketchup, bacon",
+      "prices": 10.99
+    },
+    {
+      "id": 3,
+      "name": "Fish Sandwich",
+      "image": "fish-sandwich.png",
+      "description": "American cheese, lemon pepper, tartar sauce",
+      "prices": 6.99
+    },
+    {
+      "id": 4,
+      "name": "Steak n Cheese",
+      "image": "steak-n-cheese.png",
+      "description": "Provolone cheese, grilled onions, grilled green peppers, grilled mushrooms, mayonnaise",
+      "prices": 11.99
+    },
+    {
+      "id": 5,
+      "name": "Italian",
+      "image": "italian.png",
+      "description": "Provolone cheese, ham, capriccola, pepperoni, salami, lettuce, tommatoes, onions, pickles, salt, pepper, oil, vinegar",
+      "prices": {
+        "Large": 12.99,
+        "Roll": 7.99
+      }
+    },
+    {
+      "id": 6,
+      "name": "Meatball Sub",
+      "image": "meatball.png",
+      "description": "Provolone cheese, beef meatballs, marinara sauce",
+      "prices": {
+        "large": 10.99,
+        "roll": 6.99
+      }
+    },
+    {
+      "id": 7,
+      "name": "Chicken Melt",
+      "image": "chicken-melt.png",
+      "description": "Provolone cheese, grilled onions, mushrooms, green peppers, lettuce, tomatoes, chimi sauce",
+      "prices": 10.99
+    },
+    {
+      "id": 8,
+      "name": "Turkey n Cheese",
+      "image": "1757042236901.png",
+      "description": "American cheese, lettuce, tomatoes, onions, mayonnaise",
+      "prices": {
+        "large": 10.99,
+        "roll": 6.99
+      }
+    },
+    {
+      "id": 9,
+      "name": "Bacon Egg n Cheese",
+      "image": "bacon-egg-cheese.png",
+      "description": "Bacon, eggs, cheese",
+      "prices": 5.99
+    },
+    {
+      "id": 10,
+      "name": "Cubano",
+      "image": "cubano.png",
+      "description": "Swiss cheese, pulled pork, grilled onions, pickles, cuban sauce",
+      "prices": 12.99
+    },
+    {
+      "id": 11,
+      "name": "Ham n Cheese",
+      "image": "ham-cheese.png",
+      "description": "Ham, provolone cheese, lettuce, tomatoes, onions, mayonnaise",
+      "prices": {
+        "large": 9.99,
+        "roll": 5.99
+      }
+    },
+    {
+      "id": 12,
+      "name": "Eggplant Melt Sub",
+      "image": "eggplant.png",
+      "description": "Swiss cheese, lettuce, tomatoes, grilled green peppers, grilled mushrooms, grilled onions, cuban sauce",
+      "prices": {
+        "large": 12.99,
+        "roll": 7.99
+      }
+    }
+  ],
+  "chickenWings": [
+    {
+      "id": "cw-7fa89a",
+      "name": "6 pc",
+      "price": 8.99
+    },
+    {
+      "id": "cw-249d8c",
+      "name": "12 pc",
+      "price": 14.99
+    }
+  ],
+  "pizza": [
+    {
+      "id": "pz-a8fd10",
+      "name": "18\" Pie",
+      "price": 19.99
+    },
+    {
+      "id": "pz-bc9032",
+      "name": "Slice",
+      "price": 2.99
+    },
+    {
+      "id": "pz-17aa64",
+      "name": "Pizza Combo",
+      "price": 6
+    }
+  ],
+  "empanadas": [
+    {
+      "id": "em-1af831",
+      "name": "Chicken n Cheese",
+      "price": 2.99
+    },
+    {
+      "id": "em-91ce22",
+      "name": "Steak n Cheese",
+      "price": 2.99
+    },
+    {
+      "id": "em-732bad",
+      "name": "Ham n Cheese",
+      "price": 2.99
+    },
+    {
+      "id": "em-a98df3",
+      "name": "Pizza",
+      "price": 2.99
+    },
+    {
+      "id": "em-6fe92b",
+      "name": "3 Cheese Blend",
+      "price": 2.99
+    },
+    {
+      "id": "em-e3bd12",
+      "name": "Spinach n Cheese",
+      "price": 2.99
+    },
+    {
+      "id": "em-14ce98",
+      "name": "KLK",
+      "price": 2.99
+    }
+  ],
+  "yaroa": [
+    {
+      "id": "yr-56caab",
+      "name": "Chicken",
+      "price": 12.99
+    },
+    {
+      "id": "yr-45de23",
+      "name": "Pork",
+      "price": 13.99
+    },
+    {
+      "id": "yr-c1be22",
+      "name": "Steak",
+      "price": 13.99
+    }
+  ],
+  "freshJuice": [
+    {
+      "id": "fj-11fe23",
+      "name": "Passon Fruit",
+      "price": 2.99
+    },
+    {
+      "id": "fj-d28e3c",
+      "name": "Pineapple",
+      "price": 2.99
+    },
+    {
+      "id": "fj-8357af",
+      "name": "Mango",
+      "price": 2.99
+    },
+    {
+      "id": "fj-6ad9c3",
+      "name": "Tamarind",
+      "price": 2.99
+    },
+    {
+      "id": "fj-201fc8",
+      "name": "Lemonade",
+      "price": 2.99
+    },
+    {
+      "id": "fj-51b7e1",
+      "name": "Morir Soñado",
+      "price": 2.99
+    },
+    {
+      "id": "fj-9cb24d",
+      "name": "Batidas",
+      "price": 2.99
+    }
+  ],
+  "chilliDogs": [
+    {
+      "id": "cd-7e32d1",
+      "name": "Chili Dog",
+      "price": 2.99
+    },
+    {
+      "id": "cd-385ba7",
+      "name": "Chili Dog Combo",
+      "price": 5.99
+    }
+  ],
+  "sides": [
+    {
+      "id": "sd-73bf99",
+      "name": "Regular Fries",
+      "price": 3.99
+    },
+    {
+      "id": "sd-09de1f",
+      "name": "Cajun Fries",
+      "price": 4.99
+    },
+    {
+      "id": "sd-194ef8",
+      "name": "Lemon Pepper Fries",
+      "price": 4.5
+    },
+    {
+      "id": "sd-c7aa91",
+      "name": "Yucca Fries",
+      "price": 3.99
+    },
+    {
+      "id": "sd-813f7b",
+      "name": "Mozzarella Sticks",
+      "price": 4.99
+    },
+    {
+      "id": "sd-6039ae",
+      "name": "Onion Rings",
+      "price": 4.99
+    },
+    {
+      "id": "sd-a77b42",
+      "name": "Tostones",
+      "price": 4.99
+    }
+  ],
+  "desserts": [
+    {
+      "id": "ds-98de2f",
+      "name": "Tres Leche",
+      "price": 3.5
+    },
+    {
+      "id": "ds-3413fe",
+      "name": "Big Cookie Chocolate Chips",
+      "price": 1.99
+    },
+    {
+      "id": "ds-5601cd",
+      "name": "Big Cookie Reese's",
+      "price": 1.99
+    },
+    {
+      "id": "ds-902bde",
+      "name": "Big Cookie Raisin",
+      "price": 1.99
+    },
+    {
+      "id": "ds-1ec3a0",
+      "name": "Reese's Explosion",
+      "price": 1.99
+    }
+  ]
+}
