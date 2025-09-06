@@ -39,7 +39,7 @@ const handleEditSubmit = async () => {
             }
 
             // If upload successful, get the filename from the response
-            imageFilename = uploadRes.data.filename;  // Assuming the response contains the filename
+            imageFilename = uploadRes.data.imageUrl;  // Assuming the response contains the filename
         }
 
         // Step 2: Prepare updated data for the item
@@ -111,7 +111,8 @@ const handleEditSubmit = async () => {
                                 style={{ maxWidth: '300px' }}
                                 className='img-fluid'
                                 // src={`https://square-deli-menu.web.app/public/images/sandwiches/${currentItem.image}`}
-                                src={`https://square-deli-menu.web.app/images/sandwiches/${currentItem.image}`}
+                                // src={`https://square-deli-menu.web.app/images/sandwiches/${currentItem.image}`}
+                                src={`${currentItem.image}`}
                                 alt="Menu item"
                             />
                             <br />
@@ -149,7 +150,8 @@ const handleEditSubmit = async () => {
                             style={{ maxWidth: '100px' }}
                             className='img-fluid'
                             // src={`https://square-deli-menu.web.app/public/images/sandwiches/${currentItem.image}`}
-                            src={`https://square-deli-menu.web.app/images/sandwiches/${currentItem.image}`}
+                            // src={`https://square-deli-menu.web.app/images/sandwiches/${currentItem.image}`}
+                            src={`${currentItem.image}`}
                             alt="Menu item"
                         />
                     </div>

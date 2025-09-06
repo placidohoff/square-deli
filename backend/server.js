@@ -6,6 +6,21 @@ const multer = require('multer');
 const bodyParser = require('body-parser');
 const { authenticate, verifyToken } = require('./auth')
 
+//Firebase-admin settings for bucket storage
+const admin = require('firebase-admin');
+
+const serviceAccount = require('./firebase-service-account.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: 'square-deli-menu.firebasestorage.app'
+});
+
+const bucket = admin.storage().bucket();
+
+//End Firebase settings setup
+
+
 const app = express();
 const PORT = 5000;
 // const dbPath = path.join(__dirname, 'data', 'db.json');
@@ -90,26 +105,79 @@ app.delete('/sandwiches/:id', (req, res) => {
 });
 
 // Storage config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const folder = req.body.folder || '';
-    // const uploadPath = path.join(__dirname, 'public/images/sandwiches', folder);
-    const uploadPath = path.join(__dirname, 'images/sandwiches', folder);
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const filename = Date.now() + ext;
-    cb(null, filename);
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     const folder = req.body.folder || '';
+//     // const uploadPath = path.join(__dirname, 'public/images/sandwiches', folder);
+//     const uploadPath = path.join(__dirname, 'images/sandwiches', folder);
+//     cb(null, uploadPath);
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = path.extname(file.originalname);
+//     const filename = Date.now() + ext;
+//     cb(null, filename);
+//   }
+// });
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// Endpoint to upload image
+app.post('/upload-image', upload.single('image'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded.');
+  }
+
+  try {
+    const file = req.file;
+    const fileName = `${Date.now()}_${file.originalname}`;  // Unique file name
+    const fileBuffer = file.buffer;  // The buffer containing the file data
+
+    // Create a reference to the Firebase Storage file
+    const fileUpload = bucket.file(`images/${fileName}`);
+
+    // Upload the image to Firebase Storage
+    const blobStream = fileUpload.createWriteStream({
+      resumable: false,
+      contentType: file.mimetype,
+    });
+
+    blobStream.on('finish', async () => {
+      try {
+        // Make the uploaded file publicly accessible
+        await fileUpload.makePublic();
+
+        // Public URL for the image
+        const imageUrl = `https://storage.googleapis.com/${bucket.name}/images/${fileName}`;
+
+        res.status(200).json({
+          message: 'Upload successful',
+          imageUrl,
+          filename: fileName,
+        });
+      } catch (err) {
+        console.error('Error making file public:', err);
+        res.status(500).send('Error making file public.');
+      }
+    });
+
+    blobStream.on('error', (err) => {
+      console.error('Error uploading file:', err);
+      res.status(500).send('Error uploading file.');
+    });
+
+    blobStream.end(fileBuffer);  // Write the buffer to Firebase Storage
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).send('Internal server error');
   }
 });
 
-const upload = multer({ storage });
 
-app.post('/upload-image', upload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  res.json({ message: 'Upload successful', filename: req.file.filename });
-});
+// app.post('/upload-image', upload.single('image'), (req, res) => {
+//   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+//   res.json({ message: 'Upload successful', filename: req.file.filename });
+// });
 
 
 //OTHER MENU ITEMS CONTROLLERS

@@ -1,5 +1,15 @@
 const { setGlobalOptions } = require("firebase-functions");
 const { onRequest } = require("firebase-functions/https");
+const admin = require("firebase-admin");
+const serviceAccount = require('./firebase-service-account.json');
+
+// Initialize Firebase Admin
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),  // Service account credentials
+  storageBucket: 'square-deli-menu.firebasestorage.app',  // Replace with your Firebase Storage bucket URL
+});
+
+const bucket = admin.storage().bucket();
 
 // For cost control, you can set the maximum number of containers that can be
 // running at the same time. This helps mitigate the impact of unexpected
@@ -93,26 +103,67 @@ app.delete("/sandwiches/:id", (req, res) => {
   res.status(204).send();
 });
 
-// Storage config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const folder = req.body.folder || "";
-    // const uploadPath = path.join(__dirname, "public/images/sandwiches", folder);
-    const uploadPath = path.join(__dirname, "images/sandwiches", folder);
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const filename = Date.now() + ext;
-    cb(null, filename);
+// Configure multer to use memory storage for Firebase Functions
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
   },
 });
 
-const upload = multer({ storage });
 
-app.post("/upload-image", upload.single("image"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-  res.json({ message: "Upload successful", filename: req.file.filename });
+app.post("/upload-image", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    // Generate unique filename
+    const ext = path.extname(req.file.originalname);
+    const filename = Date.now() + ext;
+    const folder = req.body.folder || "sandwiches";
+    const filePath = `images/${folder}/${filename}`;
+
+    // Create a file reference in Firebase Storage
+    const file = bucket.file(filePath);
+
+    // Create a write stream
+    const stream = file.createWriteStream({
+      metadata: {
+        contentType: req.file.mimetype,
+      },
+    });
+
+    // Handle stream events
+    stream.on("error", (error) => {
+      console.error("Upload error:", error);
+      res.status(500).json({ error: "Upload failed" });
+    });
+
+    stream.on("finish", async () => {
+      try {
+        // Make the file publicly accessible
+        await file.makePublic();
+        
+        // Return the filename (not the full URL, to match existing frontend expectations)
+        res.json({ 
+          message: "Upload successful", 
+          filename: filename,
+          url: `https://storage.googleapis.com/${bucket.name}/${filePath}`
+        });
+      } catch (error) {
+        console.error("Error making file public:", error);
+        res.status(500).json({ error: "Failed to make file public" });
+      }
+    });
+
+    // Write the file buffer to the stream
+    stream.end(req.file.buffer);
+
+  } catch (error) {
+    console.error("Upload error:", error);
+    res.status(500).json({ error: "Upload failed" });
+  }
 });
 
 //OTHER MENU ITEMS CONTROLLERS
