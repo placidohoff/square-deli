@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const multer = require('multer');
+const bodyParser = require('body-parser');
+const { authenticate, verifyToken } = require('./auth')
 
 const app = express();
 const PORT = 5000;
@@ -23,6 +25,14 @@ function readData() {
 function writeData(data) {
   fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
 }
+
+// Authentication route
+app.post('/login', authenticate);
+
+// Protected route
+app.get('/protected', verifyToken, (req, res) => {
+  res.json({ message: `Hello ${req.user.username}, this is a protected route` });
+});
 
 // ✅ GET entire menu
 app.get('/menu', (req, res) => {
@@ -83,7 +93,8 @@ app.delete('/sandwiches/:id', (req, res) => {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const folder = req.body.folder || '';
-    const uploadPath = path.join(__dirname, 'public/images/sandwiches', folder);
+    // const uploadPath = path.join(__dirname, 'public/images/sandwiches', folder);
+    const uploadPath = path.join(__dirname, 'images/sandwiches', folder);
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {

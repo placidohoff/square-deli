@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import EditItemCard from '../components/EditItemCard';
 import EditItemCardBravo from '../components/EditItemCardBravo';
+import LoginComponent from '../components/LoginComponent';
+import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:5000/menu';
+const API_URL = 'https://square-deli-menu.web.app/menu';
 
 function Edit() {
     const [sandwiches, setSandwiches] = useState([]);
@@ -14,15 +16,21 @@ function Edit() {
     const [chilliDogs, setChilliDogs] = useState([]);
     const [sides, setSides] = useState([]);
     const [dessert, setDessert] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
-    const [form, setForm] = useState({ name: '', description: '', price: '' });
+    const [form, setForm] = useState({
+        username: '',
+        password: '',
+    });
 
-    // Load sandwiches
+    const navigate = useNavigate();
+    // Load sandwiches and other menu items
     useEffect(() => {
         fetch(API_URL)
             .then(res => res.json())
             .then(data => {
-                // console.log(data)
                 setSandwiches(data.sandwiches || []);
                 setChickenWings(data.chickenWings || []);
                 setPizza(data.pizza || []);
@@ -35,146 +43,126 @@ function Edit() {
             });
     }, []);
 
-    // Add new sandwich
-    const handleAdd = async () => {
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: form.name,
-                description: form.description,
-                prices: parseFloat(form.price),
-                image: 'placeholder.png'
-            }),
-        });
+    const handleLogin = (e, form) => {
+        e.preventDefault();
 
-        const newSandwich = await res.json();
-        setSandwiches([...sandwiches, newSandwich]);
-        setForm({ name: '', description: '', price: '' });
+        const { username, password } = form;
+
+        if (username === 'admin1' && password === 'admin789') {
+            setIsLoggedIn(true);
+        } else {
+            alert("Invalid credentials!");
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target; // Get name and value of the input
+        setForm((prevForm) => ({
+            ...prevForm,
+            [name]: value, // Update the specific field in form state
+        }));
     };
 
 
 
-    return (
-        <div style={{ padding: '2rem' }}>
-            <h1>Sandwich Menu</h1>
+    const EditPage = () => {
+        return (
+            <div style={{ padding: '2rem' }}>
+                <h1>Square Deli Menu</h1>
 
-            <h2>Add Sandwich</h2>
-            <input placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-            <input placeholder="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
-            <input placeholder="Price" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
-            <button onClick={handleAdd}>Add</button>
-
-            <h2>All Sandwiches</h2>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
-                    <ul style={{ listStyle: 'none' }}>
-                        {sandwiches.map(s => (
-                            <li key={s.id}>
-                                <EditItemCard
-                                    item={s}
-                                />
-
-                            </li>
-                        ))}
-                    </ul>
+                    <button className='menu-view-btn mx-4' onClick={() => navigate('/sandwiches')}>Sandwiches Menu</button>
+                    <button className='menu-view-btn' onClick={() => navigate('/items')}>Other Food Menu</button>
                 </div>
-                <div>
-                    <h2>Chicken</h2>
-                    <ul style={{ listStyle: 'none' }}>
-                        {chickenWings.map(s => (
-                            <li key={s.id}>
-                                <EditItemCardBravo
-                                    item={s}
-                                />
 
-                            </li>
-                        ))}
-                    </ul>
-                    <h2>Pizza</h2>
-                    <ul>
-                        {pizza.map(s => (
-                            <li key={s.id}>
-                                <EditItemCardBravo
-                                    item={s}
-                                />
-
-                            </li>
-                        ))}
-                    </ul>
-                    <h2>Empanadas</h2>
-                    <ul>
-                        {empanadas.map(s => (
-                            <li key={s.id}>
-                                <EditItemCardBravo
-                                    item={s}
-                                />
-
-                            </li>
-                        ))}
-                    </ul>
-                    <h2>Yaroas</h2>
-                    <ul>
-                        {yaroas.map(s => (
-                            <li key={s.id}>
-                                <EditItemCardBravo
-                                    item={s}
-                                />
-
-                            </li>
-                        ))}
-                    </ul>
-                    
-                </div>
-                <div>
-                    <h2>FreshJuice</h2>
-                    <ul>
-                        {freshJuice.map(s => (
-                            <li key={s.id}>
-                                <EditItemCardBravo
-                                    item={s}
-                                />
-
-                            </li>
-                        ))}
-                    </ul>
-                    <h2>ChilliDogs</h2>
-                    <ul>
-                        {chilliDogs.map(s => (
-                            <li key={s.id}>
-                                <EditItemCardBravo
-                                    item={s}
-                                />
-
-                            </li>
-                        ))}
-                    </ul>
-                    <h2>Sides</h2>
-                    <ul>
-                        {sides.map(s => (
-                            <li key={s.id}>
-                                <EditItemCardBravo
-                                    item={s}
-                                />
-
-                            </li>
-                        ))}
-                    </ul>
-                    <h2>Desserts</h2>
-                    <ul>
-                        {dessert.map(s => (
-                            <li key={s.id}>
-                                <EditItemCardBravo
-                                    item={s}
-                                />
-
-                            </li>
-                        ))}
-                    </ul>
+                <h2>All Sandwiches</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <ul style={{ listStyle: 'none' }}>
+                            {sandwiches.map((s) => (
+                                <li key={s.id}>
+                                    <EditItemCard item={s} />
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div>
+                        <h2>Chicken</h2>
+                        <ul style={{ listStyle: 'none' }}>
+                            {chickenWings.map((s) => (
+                                <li key={s.id}>
+                                    <EditItemCardBravo item={s} />
+                                </li>
+                            ))}
+                        </ul>
+                        <h2>Pizza</h2>
+                        <ul>
+                            {pizza.map((s) => (
+                                <li key={s.id}>
+                                    <EditItemCardBravo item={s} />
+                                </li>
+                            ))}
+                        </ul>
+                        <h2>Empanadas</h2>
+                        <ul>
+                            {empanadas.map((s) => (
+                                <li key={s.id}>
+                                    <EditItemCardBravo item={s} />
+                                </li>
+                            ))}
+                        </ul>
+                        <h2>Yaroas</h2>
+                        <ul>
+                            {yaroas.map((s) => (
+                                <li key={s.id}>
+                                    <EditItemCardBravo item={s} />
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div>
+                        <h2>FreshJuice</h2>
+                        <ul>
+                            {freshJuice.map((s) => (
+                                <li key={s.id}>
+                                    <EditItemCardBravo item={s} />
+                                </li>
+                            ))}
+                        </ul>
+                        <h2>ChilliDogs</h2>
+                        <ul>
+                            {chilliDogs.map((s) => (
+                                <li key={s.id}>
+                                    <EditItemCardBravo item={s} />
+                                </li>
+                            ))}
+                        </ul>
+                        <h2>Sides</h2>
+                        <ul>
+                            {sides.map((s) => (
+                                <li key={s.id}>
+                                    <EditItemCardBravo item={s} />
+                                </li>
+                            ))}
+                        </ul>
+                        <h2>Desserts</h2>
+                        <ul>
+                            {dessert.map((s) => (
+                                <li key={s.id}>
+                                    <EditItemCardBravo item={s} />
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
+        );
+    };
 
-        </div>
+    return (
+        <>
+            {isLoggedIn ? <EditPage /> : <LoginComponent handleLogin={handleLogin} />}
+        </>
     );
 }
 

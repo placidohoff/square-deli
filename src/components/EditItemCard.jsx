@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/sandwiches';
-const UPLOAD_URL = 'http://localhost:5000/upload-image'; // your backend upload endpoint
+const API_URL = 'https://square-deli-menu.web.app/sandwiches';
+const UPLOAD_URL = 'https://square-deli-menu.web.app/upload-image'; // your backend upload endpoint
+// const UPLOAD_URL = 'http://localhost:5000/upload-image'; // your backend upload endpoint
 
 export default function EditItemCard({ item }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -14,54 +16,65 @@ export default function EditItemCard({ item }) {
         prices: typeof item.prices === 'object' ? JSON.stringify(item.prices) : item.prices,
     });
 
-    const handleEditSubmit = async () => {
-        try {
-            // Step 1: Upload image if selected
-            let imageFilename = currentItem.image;
+const handleEditSubmit = async () => {
+    try {
+        // Step 1: Upload image if selected
+        let imageFilename = currentItem.image;
 
-            if (selectedImage) {
-                const formData = new FormData();
-                formData.append('image', selectedImage);
-                formData.append('folder', 'sandwiches'); // Optional: for folder-specific handling
+        if (selectedImage) {
+            const formData = new FormData();
+            formData.append('image', selectedImage);
+            formData.append('folder', 'sandwiches'); // Optional: for folder-specific handling
 
-                const uploadRes = await fetch(UPLOAD_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!uploadRes.ok) throw new Error('Image upload failed');
-
-                const uploadData = await uploadRes.json();
-                imageFilename = uploadData.filename; // Update image filename
-            }
-
-            // Step 2: Update JSON/item
-            const updatedData = {
-                name: form.name,
-                description: form.description,
-                prices: isNaN(form.prices)
-                    ? JSON.parse(form.prices)
-                    : parseFloat(form.prices),
-                image: imageFilename,
-            };
-
-            const res = await fetch(`${API_URL}/${currentItem.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedData),
+            // Use axios to upload the image
+            const uploadRes = await axios.post(UPLOAD_URL, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',  // Ensure the correct content type for file uploads
+                }
             });
 
-            if (!res.ok) throw new Error('Failed to update item');
+            // Check for a successful upload response
+            if (uploadRes.status !== 200) {
+                throw new Error('Image upload failed');
+            }
 
-            const updatedItem = await res.json();
-            setCurrentItem(updatedItem);
-            setSelectedImage(null);
-            setIsEditing(false);
-        } catch (err) {
-            console.error(err);
-            alert('Update failed. Please check your input.');
+            // If upload successful, get the filename from the response
+            imageFilename = uploadRes.data.filename;  // Assuming the response contains the filename
         }
-    };
+
+        // Step 2: Prepare updated data for the item
+        const updatedData = {
+            name: form.name,
+            description: form.description,
+            prices: isNaN(form.prices)
+                ? JSON.parse(form.prices)  // If it's a stringified JSON, parse it
+                : parseFloat(form.prices), // If it's a string number, convert to float
+            image: imageFilename,  // The image filename from the upload (or original if not updated)
+        };
+
+        // Step 3: Update the item data in the database
+        const updateRes = await axios.put(`${API_URL}/${currentItem.id}`, updatedData, {
+            headers: {
+                'Content-Type': 'application/json',  // Ensure we're sending JSON
+            }
+        });
+
+        // Check if update was successful
+        if (updateRes.status !== 200) {
+            throw new Error('Failed to update item');
+        }
+
+        // Step 4: Update the local state with the updated item
+        const updatedItem = updateRes.data;  // Assuming the backend responds with the updated item
+        setCurrentItem(updatedItem);
+        setSelectedImage(null);
+        setIsEditing(false);
+
+    } catch (err) {
+        console.error('Error during edit submit:', err);
+        alert('Update failed. Please check your input.');
+    }
+};
 
     return (
         <>
@@ -97,7 +110,8 @@ export default function EditItemCard({ item }) {
                             <img
                                 style={{ maxWidth: '300px' }}
                                 className='img-fluid'
-                                src={`http://localhost:5000/public/images/sandwiches/${currentItem.image}`}
+                                // src={`https://square-deli-menu.web.app/public/images/sandwiches/${currentItem.image}`}
+                                src={`https://square-deli-menu.web.app/images/sandwiches/${currentItem.image}`}
                                 alt="Menu item"
                             />
                             <br />
@@ -134,7 +148,8 @@ export default function EditItemCard({ item }) {
                         <img
                             style={{ maxWidth: '100px' }}
                             className='img-fluid'
-                            src={`http://localhost:5000/public/images/sandwiches/${currentItem.image}`}
+                            // src={`https://square-deli-menu.web.app/public/images/sandwiches/${currentItem.image}`}
+                            src={`https://square-deli-menu.web.app/images/sandwiches/${currentItem.image}`}
                             alt="Menu item"
                         />
                     </div>

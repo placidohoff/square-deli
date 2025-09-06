@@ -97,7 +97,8 @@ app.delete("/sandwiches/:id", (req, res) => {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const folder = req.body.folder || "";
-    const uploadPath = path.join(__dirname, "public/images/sandwiches", folder);
+    // const uploadPath = path.join(__dirname, "public/images/sandwiches", folder);
+    const uploadPath = path.join(__dirname, "images/sandwiches", folder);
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {

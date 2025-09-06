@@ -6,7 +6,7 @@ const MenuGrid = () => {
 
   useEffect(() => {
     // fetch('/menu.json')
-    fetch('http://localhost:5000/menu')
+    fetch('https://square-deli-menu.web.app/menu')
       .then(response => response.json())
       .then(data => {
         console.log('Fetched data:', data); // Debugging: Check the response

@@ -22,6 +22,16 @@
   cursor: default;
 }
 
+.menu-view-btn{
+  border: 1px solid;
+  border-radius: 5px;
+}
+
+.menu-view-btn:hover{
+  background-color: brown;
+  color: #fff;
+}
+
 .anton {
   font-family: 'Anton', sans-serif;
 }

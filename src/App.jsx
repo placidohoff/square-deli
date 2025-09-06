@@ -86,9 +86,10 @@ function App() {
         {/* Actual content layout */}
         <Route path="/sandwiches" element={<Layout />} />
         <Route path="/items" element={<Layout />} />
-        <Route path="/admin" element={<PrivateRoute />}>
+        <Route path="/edit" element={<Edit />} />
+        {/* <Route path="/admin" element={<PrivateRoute />}>
           <Route path="/admin/edit" element={<Edit />} />
-        </Route>
+        </Route> */}
 
 
         {/* Optional: 404 route */}

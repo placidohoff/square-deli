@@ -14,7 +14,7 @@ const MenuBravo = () => {
 
     useEffect(() => {
         // fetch('/menu.json')
-        fetch('http://localhost:5000/menu')
+        fetch('https://square-deli-menu.web.app/menu')
             .then((res) => res.json())
             .then((data) => setMenuData(data))
             .catch((err) => console.error('Error fetching data:', err));
