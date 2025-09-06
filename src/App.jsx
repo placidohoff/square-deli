@@ -7,6 +7,7 @@ import MenuBravo from './components/MenuBravo';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Edit from './pages/Edit';
+import PrivateRoute from './components/PrivateRoute';
 
 function KeyboardToggle() {
   const navigate = useNavigate();
@@ -22,6 +23,12 @@ function KeyboardToggle() {
           navigate('/sandwiches');
         }
       }
+      if (event.code == 'KeyE') {
+        event.preventDefault();
+        navigate('/edit')
+      }
+
+      console.log(event.code);
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -79,7 +86,10 @@ function App() {
         {/* Actual content layout */}
         <Route path="/sandwiches" element={<Layout />} />
         <Route path="/items" element={<Layout />} />
-        <Route path="/edit" element={<Edit />} />
+        <Route path="/admin" element={<PrivateRoute />}>
+          <Route path="/admin/edit" element={<Edit />} />
+        </Route>
+
 
         {/* Optional: 404 route */}
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
