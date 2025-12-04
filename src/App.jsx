@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Edit from './pages/Edit';
 import PrivateRoute from './components/PrivateRoute';
+import MenuSandwiches from './components/MenuSandwiches';
+import MenuDelta from './components/MenuDelta';
 
 function KeyboardToggle() {
   const navigate = useNavigate();
@@ -56,7 +58,8 @@ function Layout() {
       <main>
         {location.pathname === '/sandwiches' && (
           <>
-            <MenuGrid />
+            {/* <MenuGrid /> */}
+            <MenuSandwiches />
             <p className="disclaimer">
               *We are happy to accommodate cooking preferences, but be advised that consuming raw or undercooked items may carry health risks.
             </p>
@@ -65,7 +68,8 @@ function Layout() {
 
         {location.pathname === '/items' && (
           <>
-            <MenuBravo />
+            {/* <MenuBravo /> */}
+           <MenuDelta />
             <p className="disclaimer">
               *Please inform your server of any allergies. Our food is prepared in kitchens that may use nuts, dairy, gluten, shellfish, and other allergens.
             </p>

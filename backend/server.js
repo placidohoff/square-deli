@@ -14,6 +14,7 @@ const serviceAccount = require('./firebase-service-account.json');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   storageBucket: 'square-deli-menu.firebasestorage.app'
+  // storageBucket: 'square-deli-menu.firebasestorage.app'
 });
 
 const bucket = admin.storage().bucket();

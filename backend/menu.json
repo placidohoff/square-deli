@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Chopped Cheese",
-      "image": "chopped.png",
+      "image": "https://storage.googleapis.com/square-deli-menu.firebasestorage.app/images/1757203669682_code.png",
       "description": "American yellow cheese, lettuce, tomatoes, grilled onions, chimi sauce",
       "prices": 9.99
     },
@@ -17,7 +17,7 @@
     {
       "id": 3,
       "name": "Fish Sandwich",
-      "image": "fish-sandwich.png",
+      "image": "https://storage.googleapis.com/square-deli-menu.firebasestorage.app/images/1757203606067_Exelis_SINCGARS_RT-1523G.jpg",
       "description": "American cheese, lemon pepper, tartar sauce",
       "prices": 6.99
     },
@@ -58,7 +58,7 @@
     {
       "id": 8,
       "name": "Turkey n Cheese",
-      "image": "1757124780319.jpg",
+      "image": "https://storage.googleapis.com/square-deli-menu.firebasestorage.app/images/1757200797281_desserts.png",
       "description": "American cheese, lettuce, tomatoes, onions, mayonnaise",
       "prices": {
         "large": 10.99,

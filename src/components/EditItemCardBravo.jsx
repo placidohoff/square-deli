@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
+
 const API_URL = 'https://square-deli-menu.web.app/other-menu-items';
+// const API_URL = 'http://localhost:5000/other-menu-items';
 // const UPLOAD_URL = 'https://square-deli-menu.web.app/upload-image'; // your backend upload endpoint
 
 export default function EditItemCardBravo({ item }) {

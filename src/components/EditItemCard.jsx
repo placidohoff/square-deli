@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_URL = 'https://square-deli-menu.web.app/sandwiches';
-const UPLOAD_URL = 'https://square-deli-menu.web.app/upload-image'; // your backend upload endpoint
-// const UPLOAD_URL = 'http://localhost:5000/upload-image'; // your backend upload endpoint
+const EDIT_API = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems';
+// const API_URL = 'https://square-deli-menu.web.app/sandwiches';
+// const UPLOAD_URL = 'https://square-deli-menu.web.app/upload-image';
 
 export default function EditItemCard({ item }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -13,68 +13,54 @@ export default function EditItemCard({ item }) {
     const [form, setForm] = useState({
         name: item.name,
         description: item.description,
-        prices: typeof item.prices === 'object' ? JSON.stringify(item.prices) : item.prices,
+        prices: Array.isArray(item.prices) ? item.prices : [],
     });
 
-const handleEditSubmit = async () => {
-    try {
-        // Step 1: Upload image if selected
-        let imageFilename = currentItem.image;
+    const [name, setName] = useState(item.name || '');
+    const [description, setDescription] = useState(item.description || '');
+    const [basePrice, setBasePrice] = useState(item.basePrice || '');
+    const [prices, setPrices] = useState(Array.isArray(item.prices) ? item.prices : []);
+    const [sizeLargePrice, setSizeLargePrice] = useState(prices[0]?.price || '');
+    const [sizeSmallPrice, setSizeSmallPrice] = useState(prices[1]?.price || '');
+    const [file, setFile] = useState(null);
 
-        if (selectedImage) {
+    const handleEditSubmit = async () => {
+        try {
             const formData = new FormData();
-            formData.append('image', selectedImage);
-            formData.append('folder', 'sandwiches'); // Optional: for folder-specific handling
+            formData.append("Id", currentItem.id);
+            formData.append("Name", name);
+            formData.append("BasePrice", basePrice);
 
-            // Use axios to upload the image
-            const uploadRes = await axios.post(UPLOAD_URL, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',  // Ensure the correct content type for file uploads
-                }
+            if (description) {
+                formData.append("Description", description);
+            }
+
+            if (Array.isArray(prices)) {
+                prices.forEach((p, index) => {
+                    formData.append(`Prices[${index}].Size`, p.size);
+                    formData.append(`Prices[${index}].Price`, p.price);
+                });
+            }
+
+            if (file) {
+                formData.append("File", file);
+            }
+
+            const res = await fetch(`${EDIT_API}/${currentItem.id}`, {
+                method: "PUT",
+                body: formData,
             });
 
-            // Check for a successful upload response
-            if (uploadRes.status !== 200) {
-                throw new Error('Image upload failed');
-            }
+            if (!res.ok) throw new Error("Failed to update item");
 
-            // If upload successful, get the filename from the response
-            imageFilename = uploadRes.data.imageUrl;  // Assuming the response contains the filename
+            const updatedItem = await res.json();
+            setCurrentItem(updatedItem);
+            setIsEditing(false);
+        } catch (err) {
+            console.error(err);
+            alert("Update failed. Please check your input.");
         }
-
-        // Step 2: Prepare updated data for the item
-        const updatedData = {
-            name: form.name,
-            description: form.description,
-            prices: isNaN(form.prices)
-                ? JSON.parse(form.prices)  // If it's a stringified JSON, parse it
-                : parseFloat(form.prices), // If it's a string number, convert to float
-            image: imageFilename,  // The image filename from the upload (or original if not updated)
-        };
-
-        // Step 3: Update the item data in the database
-        const updateRes = await axios.put(`${API_URL}/${currentItem.id}`, updatedData, {
-            headers: {
-                'Content-Type': 'application/json',  // Ensure we're sending JSON
-            }
-        });
-
-        // Check if update was successful
-        if (updateRes.status !== 200) {
-            throw new Error('Failed to update item');
-        }
-
-        // Step 4: Update the local state with the updated item
-        const updatedItem = updateRes.data;  // Assuming the backend responds with the updated item
-        setCurrentItem(updatedItem);
-        setSelectedImage(null);
-        setIsEditing(false);
-
-    } catch (err) {
-        console.error('Error during edit submit:', err);
-        alert('Update failed. Please check your input.');
-    }
-};
+    };
 
     return (
         <>
@@ -84,15 +70,15 @@ const handleEditSubmit = async () => {
                         <div style={{ width: '100%', paddingRight: '10px' }}>
                             <input
                                 type="text"
-                                value={form.name}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 placeholder="Name"
                                 style={{ width: '100%' }}
                             />
                             <br />
                             <textarea
-                                value={form.description}
-                                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Description"
                                 rows={3}
                                 style={{ width: '100%' }}
@@ -100,28 +86,42 @@ const handleEditSubmit = async () => {
                             <br />
                             <input
                                 type="text"
-                                value={form.prices}
-                                onChange={(e) => setForm({ ...form, prices: e.target.value })}
-                                placeholder='Price or {"Large": 9.99}'
+                                value={basePrice}
+                                onChange={(e) => setBasePrice(e.target.value)}
+                                placeholder={currentItem.basePrice ? currentItem.basePrice : 'None'}
                             />
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <input
+                                    type="text"
+                                    value={sizeLargePrice}
+                                    onChange={(e) => setSizeLargePrice(e.target.value)}
+                                    placeholder={currentItem.prices?.[0]?.price || 'None'}
+                                />
+                                <input
+                                    type="text"
+                                    value={sizeSmallPrice}
+                                    onChange={(e) => setSizeSmallPrice(e.target.value)}
+                                    placeholder={currentItem.prices?.[1]?.price || 'None'}
+                                />
+                            </div>
                             <br />
+                            <div>
+                                <img
+                                    style={{ maxWidth: '300px' }}
+                                    className='img-fluid'
+                                    src={currentItem.imageUrl}
+                                    alt="Menu item"
+                                />
+                                <br />
+                                <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} />
+                            </div>
                         </div>
-                        <div>
-                            <img
-                                style={{ maxWidth: '300px' }}
-                                className='img-fluid'
-                                // src={`https://square-deli-menu.web.app/public/images/sandwiches/${currentItem.image}`}
-                                // src={`https://square-deli-menu.web.app/images/sandwiches/${currentItem.image}`}
-                                src={`${currentItem.image}`}
-                                alt="Menu item"
-                            />
-                            <br />
-                            <input type="file" accept="image/*" onChange={(e) => setSelectedImage(e.target.files[0])} />
+
+                        <div style={{display: 'flex', flexDirection: 'column', width: '100%'}}>
+                            <button style={{marginBottom: '10px'}} className='btn-save' onClick={handleEditSubmit}>Save</button>
+                            <button className='btn-cancel' onClick={() => setIsEditing(false)}>Cancel</button>
                         </div>
                     </div>
-
-                    <button onClick={handleEditSubmit}>Save</button>
-                    <button onClick={() => setIsEditing(false)}>Cancel</button>
                 </div>
             ) : (
                 <div
@@ -137,21 +137,30 @@ const handleEditSubmit = async () => {
                         justifyContent: 'space-between'
                     }}
                 >
-                    <div>
-                        <strong>{currentItem.name}</strong>: $
-                        {typeof currentItem.prices === 'object'
-                            ? JSON.stringify(currentItem.prices)
-                            : currentItem.prices}
+                    <div style={{ width: '80%' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                            <strong>{currentItem.name}:</strong>
+                            <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
+                                {currentItem.basePrice
+                                    ? <span>${currentItem.basePrice.toFixed(2)}</span>
+                                    : currentItem.prices.map((p, idx) => (
+                                        <span key={idx}>
+                                            {p.size}: ${p.price.toFixed(2)}
+                                        </span>
+                                    ))
+                                }
+                            </div>
+                        </div>
                         <br />
-                        {currentItem.description}
+                        <div style={{ width: '90%' }}>
+                            {currentItem.description}
+                        </div>
                     </div>
                     <div>
                         <img
                             style={{ maxWidth: '100px' }}
                             className='img-fluid'
-                            // src={`https://square-deli-menu.web.app/public/images/sandwiches/${currentItem.image}`}
-                            // src={`https://square-deli-menu.web.app/images/sandwiches/${currentItem.image}`}
-                            src={`${currentItem.image}`}
+                            src={currentItem.imageUrl}
                             alt="Menu item"
                         />
                     </div>

@@ -1,5 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 
+.btn-save{
+  background-color: #28a745;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.btn-save:hover,
+    .btn-save:focus {
+      background-color: #218838; /* Example darker green on hover/focus */
+      border-color: #1e7e34;
+    }
+
+.btn-cancel{
+  color: #fff; /* Sets the text color to white */
+  background-color: #dc3545; /* Sets the background color to a specific shade of red */
+  border-color: #dc3545; /* Sets the border color to match the background */
+  border-radius: 5px;
+}
+
+.btn-cancel:hover {
+  color: #fff;
+  background-color: #c82333; /* Darker red on hover */
+  border-color: #bd2130;
+}
+
 .editItemForm{
   margin-bottom: 5px;
   max-width: 700px;

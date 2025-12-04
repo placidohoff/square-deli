@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import EditItemCard from '../components/EditItemCard';
-import EditItemCardBravo from '../components/EditItemCardBravo';
+import EditItemCardCharlie from '../components/EditItemCardCharlie';
 import LoginComponent from '../components/LoginComponent';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'https://square-deli-menu.web.app/menu';
+// const API_URL = 'https://square-deli-menu.web.app/menu';
+const API_URL = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems/grouped';
 
 function Edit() {
     const [sandwiches, setSandwiches] = useState([]);
@@ -31,6 +32,7 @@ function Edit() {
         fetch(API_URL)
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 setSandwiches(data.sandwiches || []);
                 setChickenWings(data.chickenWings || []);
                 setPizza(data.pizza || []);
@@ -41,6 +43,8 @@ function Edit() {
                 setSides(data.sides || []);
                 setDessert(data.desserts || []);
             });
+
+            
     }, []);
 
     const handleLogin = (e, form) => {
@@ -91,7 +95,7 @@ function Edit() {
                         <ul style={{ listStyle: 'none' }}>
                             {chickenWings.map((s) => (
                                 <li key={s.id}>
-                                    <EditItemCardBravo item={s} />
+                                    <EditItemCardCharlie item={s} />
                                 </li>
                             ))}
                         </ul>
@@ -99,7 +103,7 @@ function Edit() {
                         <ul>
                             {pizza.map((s) => (
                                 <li key={s.id}>
-                                    <EditItemCardBravo item={s} />
+                                    <EditItemCardCharlie item={s} />
                                 </li>
                             ))}
                         </ul>
@@ -107,7 +111,7 @@ function Edit() {
                         <ul>
                             {empanadas.map((s) => (
                                 <li key={s.id}>
-                                    <EditItemCardBravo item={s} />
+                                    <EditItemCardCharlie item={s} />
                                 </li>
                             ))}
                         </ul>
@@ -115,7 +119,7 @@ function Edit() {
                         <ul>
                             {yaroas.map((s) => (
                                 <li key={s.id}>
-                                    <EditItemCardBravo item={s} />
+                                    <EditItemCardCharlie item={s} />
                                 </li>
                             ))}
                         </ul>
@@ -125,7 +129,7 @@ function Edit() {
                         <ul>
                             {freshJuice.map((s) => (
                                 <li key={s.id}>
-                                    <EditItemCardBravo item={s} />
+                                    <EditItemCardCharlie item={s} />
                                 </li>
                             ))}
                         </ul>
@@ -133,7 +137,7 @@ function Edit() {
                         <ul>
                             {chilliDogs.map((s) => (
                                 <li key={s.id}>
-                                    <EditItemCardBravo item={s} />
+                                    <EditItemCardCharlie item={s} />
                                 </li>
                             ))}
                         </ul>
@@ -141,7 +145,7 @@ function Edit() {
                         <ul>
                             {sides.map((s) => (
                                 <li key={s.id}>
-                                    <EditItemCardBravo item={s} />
+                                    <EditItemCardCharlie item={s} />
                                 </li>
                             ))}
                         </ul>
@@ -149,7 +153,7 @@ function Edit() {
                         <ul>
                             {dessert.map((s) => (
                                 <li key={s.id}>
-                                    <EditItemCardBravo item={s} />
+                                    <EditItemCardCharlie item={s} />
                                 </li>
                             ))}
                         </ul>
