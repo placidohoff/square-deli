@@ -25,7 +25,7 @@ const SandwichItem = ({ item }) => {
   return (
     <div className="d-flex flex-column p-3 border rounded shadow-sm mb-4">
       <img
-        src={item.image}
+        src={`/images/sandwiches/${item.image}`}
         alt={item.name}
         className="img-fluid rounded mb-3"
         style={{ width: '100%', objectFit: 'cover', maxHeight: '165px' }}

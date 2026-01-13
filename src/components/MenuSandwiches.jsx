@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { MenuItem } from './MenuItem';
 import { SandwichItem } from './SandwichItem';
+import { DELI_API_ROOT } from '../Constants';
 
 const MenuSandwiches = () => {
   const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
-    fetch('https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems/sandwiches')
+    fetch( DELI_API_ROOT + '/api/MenuItems/sandwiches')
+    // fetch('https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems/sandwiches')
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

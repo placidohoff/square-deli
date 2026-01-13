@@ -7,6 +7,7 @@ import sides1 from "/images/sides1.png";
 import sides2 from "/images/sides2.png";
 import dessert1 from "/images/dessert1.png";
 import dessert2 from "/images/dessert2.png";
+import { DELI_API_ROOT } from "../Constants";
 
 const MenuDelta = () => {
   const [menuData, setMenuData] = useState(null);
@@ -14,7 +15,8 @@ const MenuDelta = () => {
 
   useEffect(() => {
     fetch(
-      "https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems"
+       DELI_API_ROOT + "/api/MenuItems"
+      // "https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems"
     )
       .then((res) => res.json())
       .then((data) => {

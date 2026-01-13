@@ -3,9 +3,11 @@ import EditItemCard from '../components/EditItemCard';
 import EditItemCardCharlie from '../components/EditItemCardCharlie';
 import LoginComponent from '../components/LoginComponent';
 import { useNavigate } from 'react-router-dom';
+import { DELI_API_ROOT } from '../Constants';
 
 // const API_URL = 'https://square-deli-menu.web.app/menu';
-const API_URL = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems/grouped';
+// const API_URL = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems/grouped';
+const API_URL = DELI_API_ROOT + '/api/MenuItems/grouped';
 
 function Edit() {
     const [sandwiches, setSandwiches] = useState([]);

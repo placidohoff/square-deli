@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { DELI_API_ROOT } from '../Constants';
 
-const EDIT_API = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems';
+const EDIT_API =  DELI_API_ROOT + '/api/MenuItems';
+// const EDIT_API = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems';
 // const API_URL = 'https://square-deli-menu.web.app/other-menu-items';
 // const API_URL = 'http://localhost:5000/other-menu-items';
 // const UPLOAD_URL = 'https://square-deli-menu.web.app/upload-image'; // your backend upload endpoint
