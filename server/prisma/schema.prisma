@@ -1,0 +1,50 @@
+// Prisma schema: this file is the single source of truth for the database
+// structure. Prisma reads it to (a) generate a typed JS client (`@prisma/client`,
+// what we import in code to query the DB) and (b) generate SQL migrations that
+// create/alter the actual tables in Postgres. You don't write raw SQL by hand
+// day-to-day — you edit this file and run `npx prisma migrate dev`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // DATABASE_URL is the pooled connection string, used at runtime by the app.
+  url       = env("DATABASE_URL")
+  // DIRECT_URL bypasses the pooler; Prisma Migrate needs this for schema changes.
+  directUrl = env("DIRECT_URL")
+}
+
+// One row per menu item, mirroring what the old ASP.NET API returned:
+// { id, name, description, imageUrl, basePrice, prices: [{size, price}], category }
+model MenuItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  imageUrl    String?
+  category    String
+
+  // Most items (wings, pizza, sides, etc.) just have one price — basePrice.
+  // Sandwiches instead have size-based pricing, stored in the related Price
+  // rows below, and leave basePrice null. Both existing on the model at once
+  // (instead of two separate tables) matches how the frontend already expects
+  // the data shape, so it stays a drop-in replacement for the old API.
+  basePrice   Decimal? @db.Decimal(10, 2)
+
+  prices      Price[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// A size/price pair for items that have more than one size (e.g. sandwiches:
+// "Large" vs "Roll"). Each row belongs to exactly one MenuItem.
+model Price {
+  id         Int      @id @default(autoincrement())
+  size       String
+  price      Decimal  @db.Decimal(10, 2)
+
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  menuItemId Int
+}

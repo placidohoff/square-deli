@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { DELI_API_ROOT } from '../Constants';
+import { resolveImageUrl } from '../utils/resolveImageUrl';
 
 const EDIT_API =  DELI_API_ROOT + '/api/MenuItems';
 // const EDIT_API = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems';
@@ -111,7 +112,7 @@ export default function EditItemCard({ item }) {
                                 <img
                                     style={{ maxWidth: '300px' }}
                                     className='img-fluid'
-                                    src={currentItem.imageUrl}
+                                    src={resolveImageUrl(currentItem.imageUrl)}
                                     alt="Menu item"
                                 />
                                 <br />
@@ -162,7 +163,7 @@ export default function EditItemCard({ item }) {
                         <img
                             style={{ maxWidth: '100px' }}
                             className='img-fluid'
-                            src={currentItem.imageUrl}
+                            src={resolveImageUrl(currentItem.imageUrl)}
                             alt="Menu item"
                         />
                     </div>

@@ -1,0 +1,479 @@
+[
+  {
+    "name": "Chopped Cheese",
+    "description": "American yellow cheese, lettuce, tomatoes, grilled onions, chimi sauce",
+    "imageUrl": "chopped.png",
+    "basePrice": 10.99,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Burger Steakhouse",
+    "description": "Lettuce, tomatoes, grilled onions, mayonnaise ketchup",
+    "imageUrl": "burger-steak.png",
+    "basePrice": 10.99,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Fish Sandwich",
+    "description": "American cheese, lettuce, pickles, tartar sauce",
+    "imageUrl": "fish-sandwich.png",
+    "basePrice": 7.99,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Steak n Cheese",
+    "description": "1/2 pound of shaved steak, provolone cheese, grilled onions, grilled peppers, grilled mushrooms, mayonnaise",
+    "imageUrl": "steak-n-cheese.png",
+    "basePrice": 12.99,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Italian",
+    "description": "Provolone cheese, ham, capriccola, pepperoni, salami, lettuce, tommatoes, onions, pickles, salt, pepper, oil, vinegar",
+    "imageUrl": "italian.png",
+    "basePrice": null,
+    "category": "Sandwiches",
+    "prices": [
+      {
+        "size": "Large",
+        "price": 13.99
+      },
+      {
+        "size": "Roll",
+        "price": 8.99
+      }
+    ]
+  },
+  {
+    "name": "Meatball Sub",
+    "description": "Provolone cheese, beef meatballs, marinara sauce",
+    "imageUrl": "meatball.png",
+    "basePrice": null,
+    "category": "Sandwiches",
+    "prices": [
+      {
+        "size": "Large",
+        "price": 12.99
+      },
+      {
+        "size": "Roll",
+        "price": 8.5
+      }
+    ]
+  },
+  {
+    "name": "Chicken Chopped Cheese",
+    "description": "Smoked chicken breast, provolone cheese, grilled onions, grilled mushrooms, grilled peppers, lettuce, tomatoes, chimi sauce",
+    "imageUrl": "chicken-melt.png",
+    "basePrice": 12.99,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Turkey n Cheese",
+    "description": "American cheese, lettuce, tomatoes, onions, mayonnaise",
+    "imageUrl": "turkey_cheese.jpg",
+    "basePrice": null,
+    "category": "Sandwiches",
+    "prices": [
+      {
+        "size": "Large",
+        "price": 12.99
+      },
+      {
+        "size": "Roll",
+        "price": 8.5
+      }
+    ]
+  },
+  {
+    "name": "Bacon Egg n Cheese",
+    "description": "Bacon, eggs, cheese",
+    "imageUrl": "bacon-egg-cheese.png",
+    "basePrice": 6.49,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Cubano",
+    "description": "Swiss cheese, pulled pork, grilled onions, pickles, cuban sauce",
+    "imageUrl": "cubano.png",
+    "basePrice": 13.99,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Ham n Cheese",
+    "description": "Deluxe ham, provolone cheese, lettuce, tomatoes, onions, mayonnaise",
+    "imageUrl": "ham_cheese.jpg",
+    "basePrice": null,
+    "category": "Sandwiches",
+    "prices": [
+      {
+        "size": "Large",
+        "price": 11.99
+      },
+      {
+        "size": "Roll",
+        "price": 6.99
+      }
+    ]
+  },
+  {
+    "name": "Chicken Bacon Ranch",
+    "description": "Crispy fried chicken, american cheese, lettuce, onions, tomatoes, bacon, ranch",
+    "imageUrl": "chicken-bacon-ranch.png",
+    "basePrice": 12.99,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Pastrami Melt",
+    "description": "Premium pastrami, swiss cheese, grilled onions, pickles, mustard",
+    "imageUrl": "pastrami.jpg",
+    "basePrice": null,
+    "category": "Sandwiches",
+    "prices": [
+      {
+        "size": "Large",
+        "price": 12.99
+      },
+      {
+        "size": "Roll",
+        "price": 8.99
+      }
+    ]
+  },
+  {
+    "name": "Tuna Melt",
+    "description": "White albacore tuna, peppers, onions, swiss cheese, lettuce, tomatoes, mayo",
+    "imageUrl": "tuna.jpg",
+    "basePrice": 11.99,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Salad",
+    "description": "Crispy fried chicken tenders or grilled chicken, Dressing: Italian, ranch, blue cheese, ceasar",
+    "imageUrl": "salad.jpg",
+    "basePrice": 12.99,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "Sandwich Wrap",
+    "description": "Any of our sandwiches can be made into a wrap",
+    "imageUrl": "wrap.jpg",
+    "basePrice": null,
+    "category": "Sandwiches",
+    "prices": []
+  },
+  {
+    "name": "6 pc",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 8.99,
+    "category": "Chicken Wings",
+    "prices": []
+  },
+  {
+    "name": "12 pc",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 14.99,
+    "category": "Chicken Wings",
+    "prices": []
+  },
+  {
+    "name": "1 Pound of Chicken Tenders",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 8.99,
+    "category": "Chicken Wings",
+    "prices": []
+  },
+  {
+    "name": "1 Slice",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.99,
+    "category": "Pizza",
+    "prices": []
+  },
+  {
+    "name": "1 Topping Pizza Pie",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 22.99,
+    "category": "Pizza",
+    "prices": []
+  },
+  {
+    "name": "Pizza Pie (Add Topping)",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 1.99,
+    "category": "Pizza",
+    "prices": []
+  },
+  {
+    "name": "Chicken n Cheese",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.99,
+    "category": "Empanadas",
+    "prices": []
+  },
+  {
+    "name": "Steak n Cheese",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.99,
+    "category": "Empanadas",
+    "prices": []
+  },
+  {
+    "name": "Ham n Cheese",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.99,
+    "category": "Empanadas",
+    "prices": []
+  },
+  {
+    "name": "Pizza",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.99,
+    "category": "Empanadas",
+    "prices": []
+  },
+  {
+    "name": "3 Cheese Blend",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.99,
+    "category": "Empanadas",
+    "prices": []
+  },
+  {
+    "name": "Spinach n Cheese",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.99,
+    "category": "Empanadas",
+    "prices": []
+  },
+  {
+    "name": "KLK",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.99,
+    "category": "Empanadas",
+    "prices": []
+  },
+  {
+    "name": "Pepperoni",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.99,
+    "category": "Empanadas",
+    "prices": []
+  },
+  {
+    "name": "Chicken",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 13.99,
+    "category": "Yaroa",
+    "prices": []
+  },
+  {
+    "name": "Pork",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 14.99,
+    "category": "Yaroa",
+    "prices": []
+  },
+  {
+    "name": "Steak",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 14.99,
+    "category": "Yaroa",
+    "prices": []
+  },
+  {
+    "name": "Passion Fruit",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 3.99,
+    "category": "Fresh Juice",
+    "prices": []
+  },
+  {
+    "name": "Pineapple",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 3.99,
+    "category": "Fresh Juice",
+    "prices": []
+  },
+  {
+    "name": "Mango",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 4.99,
+    "category": "Fresh Juice",
+    "prices": []
+  },
+  {
+    "name": "Tamarind",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 3.99,
+    "category": "Fresh Juice",
+    "prices": []
+  },
+  {
+    "name": "Lemonade",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 3.99,
+    "category": "Fresh Juice",
+    "prices": []
+  },
+  {
+    "name": "Morir Soñado",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 5.99,
+    "category": "Fresh Juice",
+    "prices": []
+  },
+  {
+    "name": "Batidas",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 5.99,
+    "category": "Fresh Juice",
+    "prices": []
+  },
+  {
+    "name": "Fresh Orange Juice",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 5.99,
+    "category": "Fresh Juice",
+    "prices": []
+  },
+  {
+    "name": "3 Chili Dogs",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 9.99,
+    "category": "Chilli Dogs",
+    "prices": []
+  },
+  {
+    "name": "Regular Fries",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 3.99,
+    "category": "Sides",
+    "prices": []
+  },
+  {
+    "name": "Cajun Fries",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 3.99,
+    "category": "Sides",
+    "prices": []
+  },
+  {
+    "name": "Lemon Pepper Fries",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 3.99,
+    "category": "Sides",
+    "prices": []
+  },
+  {
+    "name": "Yucca Fries",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 3.99,
+    "category": "Sides",
+    "prices": []
+  },
+  {
+    "name": "Mozzarella Sticks",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 5.99,
+    "category": "Sides",
+    "prices": []
+  },
+  {
+    "name": "Onion Rings",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 4.99,
+    "category": "Sides",
+    "prices": []
+  },
+  {
+    "name": "Tostones",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 4.99,
+    "category": "Sides",
+    "prices": []
+  },
+  {
+    "name": "Tres Leche",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 4.75,
+    "category": "Desserts",
+    "prices": []
+  },
+  {
+    "name": "Big Cookie Chocolate Chips",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.5,
+    "category": "Desserts",
+    "prices": []
+  },
+  {
+    "name": "Big Cookie Reese's",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.5,
+    "category": "Desserts",
+    "prices": []
+  },
+  {
+    "name": "Big Cookie Raisin",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.5,
+    "category": "Desserts",
+    "prices": []
+  },
+  {
+    "name": "Reese's Explosion",
+    "description": null,
+    "imageUrl": null,
+    "basePrice": 2.5,
+    "category": "Desserts",
+    "prices": []
+  }
+]

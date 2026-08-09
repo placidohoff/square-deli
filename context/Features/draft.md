@@ -10,6 +10,6 @@ View Sandwiches will open the sandwiches menu. View Food Items will open the oth
 There is a lot of unused code from previous iterations. It would be great to remove what is no longer being used.
 
 
-# Migrate database from ASP.NET to Postgres
+# Migrate database from ASP.NET to Neon Postgres
 ## Overview
-Can the database fetch and endpoints must be moved from ASP.net into Postgres and handled by neon and prism
+Can the database fetch and endpoints be moved from ASP.net into Postgres and handled by neon and prism? Walk me through it, comments in the code since I am new to the platform.

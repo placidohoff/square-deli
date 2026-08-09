@@ -1,4 +1,5 @@
 import React from 'react';
+import { resolveImageUrl } from '../utils/resolveImageUrl';
 
 const PriceDisplay = ({ prices }) => {
   if (typeof prices === 'number') {
@@ -25,7 +26,7 @@ const SandwichItem = ({ item }) => {
   return (
     <div className="d-flex flex-column p-3 border rounded shadow-sm mb-4">
       <img
-        src={`/images/sandwiches/${item.image}`}
+        src={resolveImageUrl(item.image)}
         alt={item.name}
         className="img-fluid rounded mb-3"
         style={{ width: '100%', objectFit: 'cover', maxHeight: '165px' }}
