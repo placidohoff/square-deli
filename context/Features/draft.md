@@ -12,4 +12,4 @@ There is a lot of unused code from previous iterations. It would be great to rem
 
 # Migrate database from ASP.NET to Postgres
 ## Overview
-The database fetch and endpoints must be moved from ASP.net into Postgres
+Can the database fetch and endpoints must be moved from ASP.net into Postgres and handled by neon and prism

@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Edit from './pages/Edit';
+import Landing from './pages/Landing';
 import MenuSandwiches from './components/MenuSandwiches';
 import MenuDelta from './components/MenuDelta';
 import MenuButtons from './components/MenuButtons';
@@ -87,8 +88,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Default route redirects to /sandwiches */}
-        <Route path="/" element={<Navigate to="/sandwiches" replace />} />
+        {/* Landing page with links to the menus and admin login */}
+        <Route path="/" element={<Landing />} />
 
         {/* Actual content layout */}
         <Route path="/sandwiches" element={<Layout />} />
