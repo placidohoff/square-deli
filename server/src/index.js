@@ -9,9 +9,16 @@ import multer from 'multer';
 import { prisma } from './prisma.js';
 import { formatMenuItem, CATEGORY_TO_GROUP_KEY } from './formatMenuItem.js';
 import { uploadImage } from './cloudinary.js';
+import { login, requireAuth } from './auth.js';
 
 const app = express();
 app.use(cors());
+// Only /api/auth/login needs this — the PUT endpoint below is multipart
+// form data, parsed by multer instead, not JSON.
+app.use(express.json());
+
+// POST /api/auth/login — used by Edit.jsx's login form.
+app.post('/api/auth/login', login);
 
 // memoryStorage keeps the uploaded file as a Buffer in req.file instead of
 // writing it to disk — we forward that buffer straight to Cloudinary, so
@@ -87,7 +94,10 @@ app.get('/api/MenuItems/grouped', async (req, res) => {
 // can include a new image file. Text fields arrive as plain strings on
 // req.body; `upload.single('File')` pulls the optional image out into
 // req.file and leaves the rest of req.body alone.
-app.put('/api/MenuItems/:id', upload.single('File'), async (req, res) => {
+// requireAuth runs first and only looks at the Authorization header, so an
+// unauthenticated request gets rejected before we bother parsing the
+// (possibly large) multipart body at all.
+app.put('/api/MenuItems/:id', requireAuth, upload.single('File'), async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { Name, BasePrice, Description } = req.body;

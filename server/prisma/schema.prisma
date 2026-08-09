@@ -48,3 +48,14 @@ model Price {
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
   menuItemId Int
 }
+
+// Just one row for now (a single admin account) — still a real table instead
+// of an env var so the password can be changed via the DB directly (see
+// prisma/create-admin.js) without editing server/.env or restarting the
+// server. passwordHash is a bcrypt hash, never the plain password.
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}

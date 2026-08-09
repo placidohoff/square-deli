@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { DELI_API_ROOT } from '../Constants';
 import { resolveImageUrl } from '../utils/resolveImageUrl';
+import { getAuthToken, clearAuthToken } from '../utils/authToken';
 
 const EDIT_API =  DELI_API_ROOT + '/api/MenuItems';
 // const EDIT_API = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems';
@@ -51,8 +52,19 @@ export default function EditItemCard({ item }) {
 
             const res = await fetch(`${EDIT_API}/${currentItem.id}`, {
                 method: "PUT",
+                headers: { Authorization: `Bearer ${getAuthToken()}` },
                 body: formData,
             });
+
+            if (res.status === 401) {
+                // The admin's session token is missing/expired — send them
+                // back to the login screen rather than showing a generic
+                // "update failed" that doesn't explain why.
+                clearAuthToken();
+                alert("Your session has expired. Please log in again.");
+                window.location.reload();
+                return;
+            }
 
             if (!res.ok) throw new Error("Failed to update item");
 

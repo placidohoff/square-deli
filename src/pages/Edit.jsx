@@ -4,6 +4,7 @@ import EditItemCardCharlie from '../components/EditItemCardCharlie';
 import LoginComponent from '../components/LoginComponent';
 import { useNavigate } from 'react-router-dom';
 import { DELI_API_ROOT } from '../Constants';
+import { getAuthToken, setAuthToken, clearAuthToken } from '../utils/authToken';
 
 // const API_URL = 'https://square-deli-menu.web.app/menu';
 // const API_URL = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems/grouped';
@@ -20,18 +21,23 @@ function Edit() {
     const [sides, setSides] = useState([]);
     const [dessert, setDessert] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
 
     const [isEditSandwiches, setIsEditSandwiches] = useState(false)
     const [isEditOtherMeals, setIsEditOtherMeals] = useState(false)
 
-    const [form, setForm] = useState({
-        username: '',
-        password: '',
-    });
-
     const navigate = useNavigate();
+
+    // If a token from a previous login is still saved, skip straight to the
+    // admin view instead of making them log in again every time they visit
+    // /edit. It's not verified against the server here — an expired/invalid
+    // token just means the next PUT request will fail with 401 (handled in
+    // EditItemCard.jsx/EditItemCardCharlie.jsx by logging out again).
+    useEffect(() => {
+        if (getAuthToken()) {
+            setIsLoggedIn(true);
+        }
+    }, []);
+
     // Load sandwiches and other menu items
     useEffect(() => {
         fetch(API_URL)
@@ -52,24 +58,36 @@ function Edit() {
 
     }, []);
 
-    const handleLogin = (e, form) => {
+    const handleLogin = async (e, form) => {
         e.preventDefault();
 
         const { username, password } = form;
 
-        if (username === 'admin1' && password === 'admin789') {
+        try {
+            const res = await fetch(`${DELI_API_ROOT}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (!res.ok) {
+                const { error } = await res.json().catch(() => ({}));
+                alert(error || 'Invalid credentials!');
+                return;
+            }
+
+            const { token } = await res.json();
+            setAuthToken(token);
             setIsLoggedIn(true);
-        } else {
-            alert("Invalid credentials!");
+        } catch (err) {
+            console.error(err);
+            alert('Login failed. Please check your connection and try again.');
         }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target; // Get name and value of the input
-        setForm((prevForm) => ({
-            ...prevForm,
-            [name]: value, // Update the specific field in form state
-        }));
+    const handleLogout = () => {
+        clearAuthToken();
+        setIsLoggedIn(false);
     };
 
 
@@ -81,7 +99,8 @@ function Edit() {
 
                 <div>
                     <button className='menu-view-btn mx-4' onClick={() => navigate('/sandwiches')}>Sandwiches Menu</button>
-                    <button className='menu-view-btn' onClick={() => navigate('/items')}>Other Food Menu</button>
+                    <button className='menu-view-btn mx-4' onClick={() => navigate('/items')}>Other Food Menu</button>
+                    <button className='menu-view-btn' onClick={handleLogout}>Logout</button>
                 </div>
 
                 <div className='show-on-large'>

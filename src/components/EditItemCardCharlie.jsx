@@ -1,39 +1,41 @@
 import React, { useState } from 'react';
 import { DELI_API_ROOT } from '../Constants';
+import { getAuthToken, clearAuthToken } from '../utils/authToken';
 
 const EDIT_API =  DELI_API_ROOT + '/api/MenuItems';
-// const EDIT_API = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems';
-// const API_URL = 'https://square-deli-menu.web.app/other-menu-items';
-// const API_URL = 'http://localhost:5000/other-menu-items';
-// const UPLOAD_URL = 'https://square-deli-menu.web.app/upload-image'; // your backend upload endpoint
 
 export default function EditItemCardCharlie({ item }) {
     const [isEditing, setIsEditing] = useState(false);
     const [currentItem, setCurrentItem] = useState(item);
 
-    const [name, setName] = useState('');
-    const [basePrice, setBasePrice] = useState('');
-
-    // const [form, setForm] = useState({
-    //     name: item.name,
-    //     description: item.description,
-    //     price: item.basePrice,
-    // });
+    const [name, setName] = useState(item.name || '');
+    const [description, setDescription] = useState(item.description || '');
+    const [basePrice, setBasePrice] = useState(item.basePrice || '');
 
     const handleEditSubmit = async (e) => {
         try {
             e.preventDefault();
-            //The endpoint expects PUT [FromFile]
             const formData = new FormData();
             formData.append("Id", currentItem.id);
             formData.append("Name", name);
             formData.append("BasePrice", basePrice);
 
-            //TODO: WORK ON /OTHER-MENU-ITEMS ENDPOINT: FIX THE EXPECTED BODY VALUES ETC
+            if (description) {
+                formData.append("Description", description);
+            }
+
             const res = await fetch(`${EDIT_API}/${currentItem.id}`, {
                 method: "PUT",
-                body: formData, // 🚀 no headers — browser sets correct multipart boundaries
+                headers: { Authorization: `Bearer ${getAuthToken()}` },
+                body: formData, // 🚀 no Content-Type header — browser sets correct multipart boundaries
             });
+
+            if (res.status === 401) {
+                clearAuthToken();
+                alert("Your session has expired. Please log in again.");
+                window.location.reload();
+                return;
+            }
 
             if (!res.ok) throw new Error("Failed to update item");
 
@@ -56,17 +58,17 @@ export default function EditItemCardCharlie({ item }) {
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder={currentItem.name}
+                            placeholder="Name"
                             style={{ width: '100%' }}
                         />
                         <br />
-                        {/* <textarea
-                                value={form.description}
-                                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                placeholder="Description"
-                                rows={3}
-                                style={{ width: '100%' }}
-                            /> */}
+                        <textarea
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Description"
+                            rows={3}
+                            style={{ width: '100%' }}
+                        />
                         <br />
                         <input
                             type="text"
@@ -103,13 +105,11 @@ export default function EditItemCardCharlie({ item }) {
                         width: '100%'
                     }}>
                         <strong>{currentItem.name}:</strong> ${currentItem.basePrice}
-                        {/* {typeof currentItem.prices === 'object'
-                            ? JSON.stringify(currentItem.prices)
-                            : currentItem.price} */}
                         <br />
-                        {/* {currentItem.description} */}
                     </div>
-
+                    {currentItem.description && (
+                        <div style={{ fontSize: 'smaller' }}>{currentItem.description}</div>
+                    )}
                 </div>
             )}
         </>

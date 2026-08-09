@@ -13,3 +13,19 @@ There is a lot of unused code from previous iterations. It would be great to rem
 # Migrate database from ASP.NET to Neon Postgres
 ## Overview
 Can the database fetch and endpoints be moved from ASP.net into Postgres and handled by neon and prism? Walk me through it, comments in the code since I am new to the platform.
+
+
+
+# Log in and Edit
+## Overview
+Would need a login to get to the admin section to allow for menu item updates and adding items. First work on updating prices and descriptions, then images.
+
+
+# Hosting
+## Overview
+This needs to be accessible online
+
+
+# Video Export
+## Overview
+I will paste screen shots of what is displayed on both menus. I need a 5 second video export of the current data of each screen.
