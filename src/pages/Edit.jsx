@@ -23,6 +23,9 @@ function Edit() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const [isEditSandwiches, setIsEditSandwiches] = useState(false)
+    const [isEditOtherMeals, setIsEditOtherMeals] = useState(false)
+
     const [form, setForm] = useState({
         username: '',
         password: '',
@@ -46,7 +49,7 @@ function Edit() {
                 setDessert(data.desserts || []);
             });
 
-            
+
     }, []);
 
     const handleLogin = (e, form) => {
@@ -73,7 +76,7 @@ function Edit() {
 
     const EditPage = () => {
         return (
-            <div style={{ padding: '2rem' }}>
+            <div style={{ padding: '2rem', overflowY: 'scroll', height: '100vh' }}>
                 <h1>Square Deli Menu</h1>
 
                 <div>
@@ -81,85 +84,113 @@ function Edit() {
                     <button className='menu-view-btn' onClick={() => navigate('/items')}>Other Food Menu</button>
                 </div>
 
-                <h2>All Sandwiches</h2>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <ul style={{ listStyle: 'none' }}>
-                            {sandwiches.map((s) => (
-                                <li key={s.id}>
-                                    <EditItemCard item={s} />
-                                </li>
-                            ))}
-                        </ul>
+                <div className='show-on-large'>
+                    <h2>All Sandwiches</h2>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div>
+                            <ul style={{ listStyle: 'none' }}>
+                                {sandwiches.map((s) => (
+                                    <li key={s.id}>
+                                        <EditItemCard item={s} />
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h2>Chicken</h2>
+                            <ul style={{ listStyle: 'none' }}>
+                                {chickenWings.map((s) => (
+                                    <li key={s.id}>
+                                        <EditItemCardCharlie item={s} />
+                                    </li>
+                                ))}
+                            </ul>
+                            <h2>Pizza</h2>
+                            <ul>
+                                {pizza.map((s) => (
+                                    <li key={s.id}>
+                                        <EditItemCardCharlie item={s} />
+                                    </li>
+                                ))}
+                            </ul>
+                            <h2>Empanadas</h2>
+                            <ul>
+                                {empanadas.map((s) => (
+                                    <li key={s.id}>
+                                        <EditItemCardCharlie item={s} />
+                                    </li>
+                                ))}
+                            </ul>
+                            <h2>Yaroas</h2>
+                            <ul>
+                                {yaroas.map((s) => (
+                                    <li key={s.id}>
+                                        <EditItemCardCharlie item={s} />
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h2>FreshJuice</h2>
+                            <ul>
+                                {freshJuice.map((s) => (
+                                    <li key={s.id}>
+                                        <EditItemCardCharlie item={s} />
+                                    </li>
+                                ))}
+                            </ul>
+                            <h2>ChilliDogs</h2>
+                            <ul>
+                                {chilliDogs.map((s) => (
+                                    <li key={s.id}>
+                                        <EditItemCardCharlie item={s} />
+                                    </li>
+                                ))}
+                            </ul>
+                            <h2>Sides</h2>
+                            <ul>
+                                {sides.map((s) => (
+                                    <li key={s.id}>
+                                        <EditItemCardCharlie item={s} />
+                                    </li>
+                                ))}
+                            </ul>
+                            <h2>Desserts</h2>
+                            <ul>
+                                {dessert.map((s) => (
+                                    <li key={s.id}>
+                                        <EditItemCardCharlie item={s} />
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
-                    <div>
-                        <h2>Chicken</h2>
-                        <ul style={{ listStyle: 'none' }}>
-                            {chickenWings.map((s) => (
-                                <li key={s.id}>
-                                    <EditItemCardCharlie item={s} />
-                                </li>
-                            ))}
-                        </ul>
-                        <h2>Pizza</h2>
-                        <ul>
-                            {pizza.map((s) => (
-                                <li key={s.id}>
-                                    <EditItemCardCharlie item={s} />
-                                </li>
-                            ))}
-                        </ul>
-                        <h2>Empanadas</h2>
-                        <ul>
-                            {empanadas.map((s) => (
-                                <li key={s.id}>
-                                    <EditItemCardCharlie item={s} />
-                                </li>
-                            ))}
-                        </ul>
-                        <h2>Yaroas</h2>
-                        <ul>
-                            {yaroas.map((s) => (
-                                <li key={s.id}>
-                                    <EditItemCardCharlie item={s} />
-                                </li>
-                            ))}
-                        </ul>
+                </div>
+
+                <div className='show-on-mobile'>
+                    <div style={{ display: 'flex', justifyContent: 'space-evenly' }} className='mt-4'>
+                        <button onClick={() => { setIsEditSandwiches(true); setIsEditOtherMeals(false) }}>Edit Sandwiches</button>
+                        <button onClick={() => { setIsEditOtherMeals(true); setIsEditSandwiches(false) }}>Edit Other Meals</button>
                     </div>
-                    <div>
-                        <h2>FreshJuice</h2>
-                        <ul>
-                            {freshJuice.map((s) => (
-                                <li key={s.id}>
-                                    <EditItemCardCharlie item={s} />
-                                </li>
-                            ))}
-                        </ul>
-                        <h2>ChilliDogs</h2>
-                        <ul>
-                            {chilliDogs.map((s) => (
-                                <li key={s.id}>
-                                    <EditItemCardCharlie item={s} />
-                                </li>
-                            ))}
-                        </ul>
-                        <h2>Sides</h2>
-                        <ul>
-                            {sides.map((s) => (
-                                <li key={s.id}>
-                                    <EditItemCardCharlie item={s} />
-                                </li>
-                            ))}
-                        </ul>
-                        <h2>Desserts</h2>
-                        <ul>
-                            {dessert.map((s) => (
-                                <li key={s.id}>
-                                    <EditItemCardCharlie item={s} />
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+
+                    {isEditSandwiches && (
+                        
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(3, 1fr)",
+                                gap: "12px",
+                            }}>
+                                <p>TESTING...</p>
+                            {
+                                sandwiches.map((s) => (
+                                    
+                                        <EditItemCard item={s} />
+                                    
+                                ))
+                            }
+                        </div>
+                    )}
                 </div>
             </div>
         );

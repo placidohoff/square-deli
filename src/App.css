@@ -231,3 +231,56 @@ ul{
 .sandwich-desc{
   color: #D1591C !important;
 }
+
+
+/* Hide by default */
+.show-on-mobile {
+  display: none;
+}
+
+/* Show only on small screens */
+@media (max-width: 768px) {
+  .show-on-mobile {
+    display: block;
+  }
+}
+
+
+.offscreen-above{
+
+}
+
+.options-for-user > ul >li{
+  border: 1px solid #000;
+}
+
+.options-for-user > ul >li:hover{
+  cursor: pointer;
+  background-color: #1e7e34;
+  color: #fff;
+}
+
+.options-for-user > ul {
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+.menu-bn:hover{
+  cursor: pointer;
+}
+
+.edit-pg-lg{
+
+}
+
+/* Hide by default */
+.show-on-large {
+  display: block;
+}
+
+/* Show only on small screens */
+@media (max-width: 768px) {
+  .show-on-large {
+    display: none;
+  }
+}

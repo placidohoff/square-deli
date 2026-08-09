@@ -33,7 +33,10 @@ const SandwichItem = ({ item }) => {
       <div className="d-flex flex-column flex-grow-1">
         <div className="d-flex justify-content-between align-items-start mb-2">
           <h3 className="h3 mb-0 fw-bold" style={{ fontSize: "28px" }}>{item.name}</h3>
-          <PriceDisplay prices={item.prices} />
+          {
+            item.name !== "Sandwich Wrap" && <PriceDisplay prices={item.prices} />
+          }
+          
         </div>
         {item.description && (
           <p className="text-muted mb-0 fst-italic fw-bold sandwich-desc" style={{ fontSize: "larger" }}>

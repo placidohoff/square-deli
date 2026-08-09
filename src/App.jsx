@@ -1,15 +1,12 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 
-import MenuGrid from './components/MenuGrid';
-import MenuBravo from './components/MenuBravo';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Edit from './pages/Edit';
-import PrivateRoute from './components/PrivateRoute';
 import MenuSandwiches from './components/MenuSandwiches';
 import MenuDelta from './components/MenuDelta';
+import MenuButtons from './components/MenuButtons';
 
 function KeyboardToggle() {
   const navigate = useNavigate();
@@ -46,6 +43,7 @@ function Layout() {
   return (
     <div className="container-fluid">
       <KeyboardToggle />
+      <MenuButtons />
 
       <header className="text-center mb-5">
         {location.pathname === '/sandwiches' && (
@@ -58,18 +56,23 @@ function Layout() {
       <main>
         {location.pathname === '/sandwiches' && (
           <>
-            {/* <MenuGrid /> */}
             <MenuSandwiches />
+            
             <p className="disclaimer">
               *We are happy to accommodate cooking preferences, but be advised that consuming raw or undercooked items may carry health risks.
             </p>
+            <p className='disclaimer'>
+              *Taxes not included
+           </p>
           </>
         )}
 
         {location.pathname === '/items' && (
           <>
-            {/* <MenuBravo /> */}
            <MenuDelta />
+           <p className='disclaimer'>
+              *Taxes not included
+           </p>
             <p className="disclaimer">
               *Please inform your server of any allergies. Our food is prepared in kitchens that may use nuts, dairy, gluten, shellfish, and other allergens.
             </p>
@@ -91,10 +94,6 @@ function App() {
         <Route path="/sandwiches" element={<Layout />} />
         <Route path="/items" element={<Layout />} />
         <Route path="/edit" element={<Edit />} />
-        {/* <Route path="/admin" element={<PrivateRoute />}>
-          <Route path="/admin/edit" element={<Edit />} />
-        </Route> */}
-
 
         {/* Optional: 404 route */}
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />

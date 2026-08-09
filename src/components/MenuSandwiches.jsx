@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { MenuItem } from './MenuItem';
 import { SandwichItem } from './SandwichItem';
 import { DELI_API_ROOT } from '../Constants';
 
