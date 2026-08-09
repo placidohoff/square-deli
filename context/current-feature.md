@@ -3,7 +3,7 @@
 Spec: [context/Features/admin-screen.md](Features/admin-screen.md)
 
 ## Status
-Phase 1 complete and user-verified in the browser (real login, editing prices/descriptions for both sandwiches and other-meals items). Phase 2 (image updates through the admin UI) intentionally not started — out of scope for this pass per the spec's own phasing. Not yet committed/merged.
+Phase 1 complete — merged to `master` and pushed (real login, editing prices/descriptions for both sandwiches and other-meals items, user-verified in the browser). Phase 2 (image updates through the admin UI) intentionally not started — out of scope for this pass per the spec's own phasing. Two reference-screenshot folders for a related follow-up feature (`context/Features/screenshots/`, `context/screenshots/` — a more polished admin panel design mockup) are sitting untracked in the working tree, deliberately left out of this commit at user's request; expect a new feature spec about that next.
 
 ## Goals
 
