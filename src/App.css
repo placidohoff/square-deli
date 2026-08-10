@@ -537,6 +537,7 @@ ul{
   padding: 0.4rem 0.9rem;
   cursor: pointer;
   font-size: 0.9rem;
+  color: #000;
 }
 
 .admin-pill.active {
