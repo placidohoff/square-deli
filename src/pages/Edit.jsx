@@ -129,11 +129,23 @@ function Edit() {
                 )}
 
                 <div className="admin-item-grid">
-                    {filteredItems.map((item) => (
-                        selectedKey === 'sandwiches'
-                            ? <EditItemCard key={item.id} item={item} onDeleted={handleItemDeleted} />
-                            : <EditItemCardCharlie key={item.id} item={item} onDeleted={handleItemDeleted} />
-                    ))}
+                    {filteredItems.map((item) => {
+                        // isFirst/isLast reflect the item's position within its
+                        // full category list, not the (possibly search-filtered)
+                        // list actually on screen — reordering is about the
+                        // category's real stored order, so the up/down buttons
+                        // shouldn't behave differently just because a search is
+                        // active and hiding some of the items around it.
+                        const indexInCategory = items.findIndex((i) => i.id === item.id);
+                        const isFirst = indexInCategory === 0;
+                        const isLast = indexInCategory === items.length - 1;
+
+                        const props = { key: item.id, item, isFirst, isLast, onDeleted: handleItemDeleted, onMoved: loadMenuData };
+
+                        return selectedKey === 'sandwiches'
+                            ? <EditItemCard {...props} />
+                            : <EditItemCardCharlie {...props} />;
+                    })}
                 </div>
             </main>
         </div>

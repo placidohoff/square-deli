@@ -1,26 +1,23 @@
 # Current Feature
 
-Spec: [context/Features/remodel-admin-page.md](Features/remodel-admin-page.md)
+Spec: [context/Features/reorder-items.md](Features/reorder-items.md)
 
 ## Status
-Complete — user-verified in the browser. Real "reorder sandwiches" (up/down move buttons) explicitly deferred to a separate future feature.
+Complete — user-verified in the browser (moved items in multiple categories, boundary buttons disable correctly, order persists across reload). Not yet committed/merged.
 
 ## Goals
 
 <!-- Bullet points of what success looks like -->
-- Replace `Edit.jsx`'s current ad hoc column layout with the design in `context/Features/screenshots/edit-page-update.png`.
-- Mockup shows: dark sidebar with category nav (icon + name + item count per category, active-state highlighting) and a Logout button; main area with a page title + item count subtitle, a search box, an "+ Add Item" button, a secondary row of category filter pills (also with counts), and a card grid of items (name, price badge — single price or "Large: $X / Roll: $Y" for size-based items, truncated description, Edit/Delete actions in a footer band).
+- Admin can rearrange the display order of menu items from `/edit`, for every category — not just sandwiches (spec is explicit: "Not just sandwiches but any item").
+- Per the earlier decision when this was deferred out of `remodel-admin-page`: up/down move buttons on each card, not drag-and-drop.
 
 ## Notes
 
 <!-- Additional context, constraints, or details from spec -->
-- Spec text is minimal ("must be renovated") and points entirely at the screenshot — treat the image as the actual spec.
-- The mockup implies real functionality that doesn't exist yet, not just new styling: a **search box** (client-side filter, presumably, since all items for a category are already fetched), an **"+ Add Item" button** (there is currently no create-item flow anywhere — backend only has `GET`/`PUT` on `/api/MenuItems`, no `POST`), and a **Delete action** per card (backend has no `DELETE /api/MenuItems/:id` either). Both would need new `server/` endpoints (`requireAuth`-protected, matching the `PUT` pattern) plus frontend wiring, not just layout work.
-- The mockup's sidebar and the secondary pill row both show the same 9 categories with the same counts — likely redundant by design (e.g. pills for quick switching without scrolling the sidebar), should confirm rather than assume it's a mistake to replicate.
-- "Made by Atoms" badge bottom-right of the mockup is almost certainly a watermark from whatever tool generated the image, not a real design requirement — don't build that in.
-- This fully replaces the current `EditItemCard.jsx`/`EditItemCardCharlie.jsx` card markup and `Edit.jsx`'s layout, but should keep using the existing real login/JWT flow from `admin-screen` (Logout button in the mockup's sidebar maps directly to the already-built `handleLogout`) and the existing `PUT` endpoint/`resolveImageUrl.js` for what already works — this is a UI remodel of a working feature, not a redo of the auth/data layer.
-- Two near-duplicate screenshot folders existed (`context/Features/screenshots/` and `context/screenshots/`, same file) — resolved: kept `context/Features/screenshots/` (matches what the spec doc references) and deleted the `context/screenshots/` duplicate.
-- Follow-up feature identified but explicitly out of scope here: reordering items within a category (currently always `orderBy: id`, i.e. creation order, on both `GET` endpoints). User chose up/down move buttons over drag-and-drop for whenever that gets built, and chose to track it separately rather than extend this branch.
+- Spec text is minimal, same pattern as the last two features — this was already scoped out during `remodel-admin-page` (see its History entries), so the design decisions (up/down buttons, separate feature) predate this doc.
+- Current state: both `GET /api/MenuItems` and `GET /api/MenuItems/grouped` always `orderBy: { id: 'asc' }` — display order is just creation order, nothing persisted about a deliberate order.
+- Plan: add a `sortOrder` field to `MenuItem` (new migration), backfill existing rows to match current `id` order so nothing visibly jumps around on first deploy, switch both `GET` endpoints' `orderBy` to `sortOrder`, add a `requireAuth`-protected move endpoint (swap `sortOrder` with the adjacent item in the same category), and add up/down buttons to `EditItemCard.jsx`/`EditItemCardCharlie.jsx`'s footer (disabled at the top/bottom of each category's list).
+- Move/reorder should operate on the item's position within its full category list, not the search-filtered subset — reordering "within what's currently visible" while a search is active would be confusing and wouldn't match what's actually stored.
 
 ## History
 
@@ -70,3 +67,8 @@ Complete — user-verified in the browser. Real "reorder sandwiches" (up/down mo
 - 2026-08-09: [remodel-admin-page] Added labels to all Edit/Add form fields (previously placeholder-only). For `EditItemCard.jsx`, fixed a UX issue the user flagged: a sandwich has either a single price or Large/Roll prices, never both (per `schema.prisma`), but the edit form showed both input pairs unconditionally with no indication of that — now it shows only whichever the item actually uses (`isSizePriced` derived from the item's existing `prices` array). For `AddItemForm`, added a Category `<select>` dropdown (previously silently locked to whatever category tab was open when "+ Add Item" was clicked) — since pricing mode is per-item, not fixed by category (e.g. some sandwiches are single-price, others Large/Roll), the Sandwiches case shows both price shapes with a hint text rather than trying to infer one.
 - 2026-08-09: [remodel-admin-page] User asked about reordering sandwiches' display order — currently fixed to `orderBy: id`. Scoped as a separate future feature rather than extending this branch; user's preference when built is up/down move buttons over drag-and-drop.
 - 2026-08-09: [remodel-admin-page] Deduplicated the two screenshot copies (kept `context/Features/screenshots/`, deleted `context/screenshots/`); included the user's own unrelated pre-existing `App.jsx` edit (comments out the `/sandwiches` page's "Sandwiches" `<h1>` header) in this commit at their confirmation. `npm run lint`/`npm run build` verified clean throughout.
+- 2026-08-09: [reorder-items] Branch `reorder-items` created off `master`; feature spec linked from `context/Features/reorder-items.md`. Confirms scope from `remodel-admin-page`'s deferral: applies to every category, not just sandwiches.
+- 2026-08-10: [reorder-items] Added `sortOrder` to `MenuItem` (migration `20260810013149_add_sort_order`), backfilled to match existing `id` order via a one-off Prisma script so nothing visibly reordered on first deploy. Switched both `GET` endpoints' `orderBy` to `[{ sortOrder: 'asc' }, { id: 'asc' }]`; `POST` (create) now computes `sortOrder` as one past the current max in that category, so new items land at the end.
+- 2026-08-10: [reorder-items] Added `PUT /api/MenuItems/:id/move` (`requireAuth`-protected, body `{ direction: 'up' | 'down' }`): finds the nearest neighbor in the same category by `sortOrder` and swaps the two in a transaction; a no-op `{ moved: false }` response (not an error) if already first/last, since the UI is expected to disable the button there but a stale page could still call it. Verified the auth-gating via curl (401 without a token).
+- 2026-08-10: [reorder-items] Frontend: added up/down buttons (`react-icons/fi` chevrons) to `EditItemCard.jsx`/`EditItemCardCharlie.jsx`'s footer; moved the duplicated `handleUnauthorized` helper (previously copy-pasted in both files) into `authToken.js` as a shared export while touching both files anyway. `Edit.jsx` computes `isFirst`/`isLast` from the item's position in the full (unfiltered) category list — not the search-filtered view — and passes a shared `onMoved={loadMenuData}` to refetch after a successful move, same refetch-based pattern already used for create/delete.
+- 2026-08-10: [reorder-items] `npm run lint`/`npm run build` verified clean (same 3 pre-existing `MenuDelta.jsx` errors, unrelated). User tested in the browser: moved items across multiple categories, confirmed boundary buttons disable correctly, confirmed order survives a page reload.

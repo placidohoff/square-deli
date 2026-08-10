@@ -34,3 +34,8 @@ I will paste screen shots of what is displayed on both menus. I need a 5 second 
 # Remodel the Admin Page
 ## Overview
 The admin page to edit must be renovated. Please refer to the @context/Features/screenshots/edit-page-update.png
+
+
+# Reorder Items
+## Overview
+Can the items be rearranged from the admin screen. Not just sandwiches but any item.

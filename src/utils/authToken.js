@@ -16,3 +16,12 @@ export function setAuthToken(token) {
 export function clearAuthToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
+
+// Handles a 401 the same way everywhere it can happen (expired/missing
+// token): drop the stale token and send the admin back to the login screen,
+// rather than showing a generic "failed" alert that doesn't explain why.
+export function handleUnauthorized() {
+  clearAuthToken();
+  alert('Your session has expired. Please log in again.');
+  window.location.reload();
+}

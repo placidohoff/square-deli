@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import { DELI_API_ROOT } from '../Constants';
-import { getAuthToken, clearAuthToken } from '../utils/authToken';
+import { getAuthToken, handleUnauthorized } from '../utils/authToken';
 import AdminModal from './admin/AdminModal';
 
 const EDIT_API =  DELI_API_ROOT + '/api/MenuItems';
 
-function handleUnauthorized() {
-    clearAuthToken();
-    alert('Your session has expired. Please log in again.');
-    window.location.reload();
-}
-
-export default function EditItemCardCharlie({ item, onDeleted }) {
+export default function EditItemCardCharlie({ item, isFirst, isLast, onDeleted, onMoved }) {
     const [isEditing, setIsEditing] = useState(false);
     const [currentItem, setCurrentItem] = useState(item);
 
@@ -55,6 +49,31 @@ export default function EditItemCardCharlie({ item, onDeleted }) {
         }
     };
 
+    const handleMove = async (direction) => {
+        try {
+            const res = await fetch(`${EDIT_API}/${currentItem.id}/move`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${getAuthToken()}`,
+                },
+                body: JSON.stringify({ direction }),
+            });
+
+            if (res.status === 401) {
+                handleUnauthorized();
+                return;
+            }
+
+            if (!res.ok) throw new Error("Failed to move item");
+
+            onMoved();
+        } catch (err) {
+            console.error(err);
+            alert("Move failed. Please try again.");
+        }
+    };
+
     const handleDelete = async (e) => {
         e.stopPropagation();
         if (!window.confirm(`Delete "${currentItem.name}"? This can't be undone.`)) return;
@@ -94,12 +113,22 @@ export default function EditItemCardCharlie({ item, onDeleted }) {
                 )}
 
                 <div className="admin-item-footer">
-                    <button type="button" className="admin-edit-btn" onClick={() => setIsEditing(true)}>
-                        <FiEdit2 /> Edit
-                    </button>
-                    <button type="button" className="admin-delete-btn" onClick={handleDelete} disabled={isDeleting}>
-                        <FiTrash2 /> {isDeleting ? 'Deleting...' : 'Delete'}
-                    </button>
+                    <div className="admin-move-buttons">
+                        <button type="button" className="admin-move-btn" onClick={() => handleMove('up')} disabled={isFirst} aria-label="Move up">
+                            <FiChevronUp />
+                        </button>
+                        <button type="button" className="admin-move-btn" onClick={() => handleMove('down')} disabled={isLast} aria-label="Move down">
+                            <FiChevronDown />
+                        </button>
+                    </div>
+                    <div className="admin-item-actions">
+                        <button type="button" className="admin-edit-btn" onClick={() => setIsEditing(true)}>
+                            <FiEdit2 /> Edit
+                        </button>
+                        <button type="button" className="admin-delete-btn" onClick={handleDelete} disabled={isDeleting}>
+                            <FiTrash2 /> {isDeleting ? 'Deleting...' : 'Delete'}
+                        </button>
+                    </div>
                 </div>
             </div>
 

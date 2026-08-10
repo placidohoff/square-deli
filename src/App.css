@@ -622,9 +622,42 @@ ul{
 .admin-item-footer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border-top: 1px solid #f2f0ee;
   padding-top: 0.6rem;
   margin-top: auto;
+}
+
+.admin-move-buttons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.admin-move-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid #e7e5e4;
+  border-radius: 6px;
+  color: #57534e;
+  cursor: pointer;
+  padding: 0.3rem;
+  line-height: 1;
+}
+
+.admin-move-btn:hover:not(:disabled) {
+  background: #f2f0ee;
+}
+
+.admin-move-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.admin-item-actions {
+  display: flex;
+  gap: 0.25rem;
 }
 
 .admin-edit-btn,

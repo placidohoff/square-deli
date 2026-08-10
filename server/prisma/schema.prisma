@@ -34,6 +34,12 @@ model MenuItem {
 
   prices      Price[]
 
+  // Display order within a category, lowest first. Not the same as `id` —
+  // `id` is creation order and never changes, `sortOrder` is what the admin
+  // "move up"/"move down" buttons actually change. Backfilled to match `id`
+  // order for existing rows so nothing visibly jumps around on first deploy.
+  sortOrder   Int      @default(0)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
