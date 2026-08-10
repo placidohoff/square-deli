@@ -162,7 +162,6 @@ const MenuDelta = () => {
           <div
             key={`${current.title}-${next.title}`}
             className="menu-row"
-            style={{ display: "flex", gap: "2rem" }}
           >
             <div style={{ flex: 1 }}>{renderSection(current)}</div>
             <div style={{ flex: 1 }}>{renderSection(next)}</div>
@@ -198,22 +197,13 @@ const MenuDelta = () => {
 
   return (
     <div className="deli-menu-container">
-      <div className="column" style={{ flex: ".6" }}>
+      <div className="column menu-column-images">
         <RenderImagesSection />
       </div>
-      <div
-        className="column"
-        style={{
-          borderLeft: "1px solid #F67065",
-          borderRight: "1px solid #F67065",
-          flex: "1.5",
-          paddingLeft: "40px",
-          paddingRight: "40px",
-        }}
-      >
+      <div className="column menu-column-main">
         {renderPairedSections(column2Sections)}
       </div>
-      <div className="column">{renderPairedSections(column3Sections)}</div>
+      <div className="column menu-column-side">{renderPairedSections(column3Sections)}</div>
     </div>
   );
 };

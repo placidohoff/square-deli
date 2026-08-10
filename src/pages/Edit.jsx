@@ -3,6 +3,7 @@ import EditItemCard from '../components/EditItemCard';
 import EditItemCardCharlie from '../components/EditItemCardCharlie';
 import LoginComponent from '../components/LoginComponent';
 import AdminSidebar from '../components/admin/AdminSidebar';
+import AdminMobileMenu from '../components/admin/AdminMobileMenu';
 import AdminHeader from '../components/admin/AdminHeader';
 import AdminCategoryPills from '../components/admin/AdminCategoryPills';
 import AddItemForm from '../components/admin/AddItemForm';
@@ -104,6 +105,8 @@ function Edit() {
                 onSelect={(key) => { setSelectedKey(key); setSearchQuery(''); setIsAddingItem(false); }}
                 onLogout={handleLogout}
             />
+
+            <AdminMobileMenu onLogout={handleLogout} />
 
             <main className="admin-main">
                 <AdminHeader
