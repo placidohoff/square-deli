@@ -1,22 +1,22 @@
 # Current Feature
 
-Spec: [context/Features/loading-screens.md](Features/loading-screens.md)
+Spec: [context/Features/pages-not-found.md](Features/pages-not-found.md)
 
 ## Status
-Complete — user-verified live in browser.
+Complete — user added the dashboard Rewrite rule; verified live via curl that `/sandwiches`, `/items`, `/edit` all return 200 now.
 
 ## Goals
 
 <!-- Bullet points of what success looks like -->
-- Whenever a screen is waiting on data from the backend, show a loading state with a spinning/animated indicator instead of a blank or stale screen.
+- Directly navigating (typed URL, bookmark, refresh) to `/sandwiches`, `/items`, or `/edit` on the live Render Static Site works instead of 404ing.
 
 ## Notes
 
 <!-- Additional context, constraints, or details from spec -->
-- Spec text is minimal: "Please have a loading screen with a spinning loading gif if the database has not returned the necessary data yet."
-- Data-fetching screens identified from the current codebase that would need this: `MenuSandwiches.jsx` (`/sandwiches`, fetches `/api/MenuItems/sandwiches`), `MenuDelta.jsx` (`/items`, fetches `/api/MenuItems` — already has an ad hoc `if (!menuData) return <div>Loading...</div>` text-only placeholder, no spinner), `Edit.jsx` (`/edit` admin panel, fetches `/api/MenuItems/grouped` via `loadMenuData()`). None of these currently show a real spinner/animation — `MenuSandwiches.jsx` and `Edit.jsx` render nothing (empty state) until data arrives, not even placeholder text.
-- Backend is on Render free tier with a ~30-50s cold start after 15 min idle (per `CLAUDE.md`'s Deploys section) — real visitors will actually see this loading state for a nontrivial stretch of time on the first request, not just a network-latency flicker, so it's not a cosmetic-only nicety.
-- Open decision: a shared/reusable loading component (single spinner used across all three screens) vs. per-screen implementations — leaning shared given the identical need across `MenuSandwiches`/`MenuDelta`/`Edit`.
+- Spec: manually navigating to `square-deli.onrender.com/sandwiches` (or `/items`, `/edit`) 404s, but the same route works fine via in-app client-side navigation (Space/`E` keyboard shortcuts, `MenuButtons`/`AdminMobileMenu` nav) — the classic SPA-on-static-host symptom: a fresh server request for a client-only route has no matching file server-side.
+- `CLAUDE.md` and `context/current-feature.md`'s `hosting` history both claim `public/_redirects` (Netlify-format) already solves this and that "Render also supports it." Verified live that's **not actually true**: `curl -sI https://square-deli.onrender.com/sandwiches` returns a real `404 Not Found` (plain-text body, no `_redirects`-driven rewrite), while `curl https://square-deli.onrender.com/_redirects` serves the file's contents correctly as a static asset — meaning Render deploys the file but never parses/applies it as a rewrite rule. Confirmed via Render's own docs (fetched live): SPA rewrites on Render Static Sites are configured through the dashboard's **Redirects/Rewrites** tab (Source `/*` → Destination `/index.html` → Action `Rewrite`), not a `_redirects` file — that convention is Netlify's, not Render's, despite the assumption made during the `hosting` feature.
+- Actual fix is a one-time Render dashboard change on the frontend Static Site (not achievable from the repo/CLI): add a Rewrite rule, Source `/*`, Destination `/index.html`. The `hosting` feature's history notes the user couldn't find this tab earlier because it "only appears after the static site exists" — the site now exists, so it should be visible.
+- `public/_redirects` is harmless to keep (other static hosts do honor it, e.g. Netlify/Cloudflare Pages) but isn't what's actually serving SPA fallback on Render — `CLAUDE.md` needs correcting once the dashboard rule is confirmed working, so it doesn't keep steering future work on a false assumption.
 
 ## History
 
@@ -93,3 +93,5 @@ Complete — user-verified live in browser.
 - 2026-08-10: [loading-screens] `Edit.jsx`'s `loadMenuData` now takes an optional `{ showSpinner }` flag so only the initial mount fetch shows the full loading screen — refetches after create/delete/move (already silent, in-place updates) don't flash the grid back to a spinner.
 - 2026-08-10: [loading-screens] User caught that the page disclaimer text (tax/allergy notices, previously rendered in `App.jsx`'s `Layout` as siblings of `MenuSandwiches`/`MenuDelta`, not children) kept showing above/below the spinner during loading. Fixed by moving the disclaimer paragraphs into each component's own returned JSX, after the loading check, so they're part of the same loaded-only render; `Layout` now just renders the bare `<MenuSandwiches />`/`<MenuDelta />`.
 - 2026-08-10: [loading-screens] Verified with `npm run lint` (same 3 pre-existing unrelated `MenuDelta.jsx` errors) and `npm run build`, both clean. User confirmed all three loading states look correct live in the dev server. Feature marked complete.
+- 2026-08-10: [pages-not-found] Branch `pages-not-found` created off `master`; feature spec linked from `context/Features/pages-not-found.md`. Diagnosed via live `curl` against `square-deli.onrender.com` and Render's own docs (fetched live): the `hosting` feature's `public/_redirects` fix was never actually taking effect — Render deploys the file but doesn't parse it as a rewrite rule (that's a Netlify convention). Render's real mechanism is a dashboard-configured Redirects/Rewrites rule. Not a code fix; needs the user to add the rule in Render's dashboard for the frontend Static Site.
+- 2026-08-10: [pages-not-found] User added the Rewrite rule in Render's dashboard (frontend Static Site → Redirects/Rewrites → Source `/*`, Destination `/index.html`, Action Rewrite) — no repo/code change needed, so the `pages-not-found` branch ends up carrying only this doc update. Verified live via curl: `/sandwiches`, `/items`, `/edit` all return `200` now instead of `404`. Corrected `CLAUDE.md`'s Deploys section, which previously credited `public/_redirects` with handling this — it's kept in the repo (harmless, other hosts like Netlify do honor it) but documented as not what's actually active on Render.
