@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { SandwichItem } from './SandwichItem';
+import LoadingSpinner from './LoadingSpinner';
 import { DELI_API_ROOT } from '../Constants';
 
 const MenuSandwiches = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch( DELI_API_ROOT + '/api/MenuItems/sandwiches')
@@ -41,15 +43,29 @@ const MenuSandwiches = () => {
 
         setMenuItems(formatted);
       })
-      .catch(error => console.error('Error fetching sandwiches:', error));
+      .catch(error => console.error('Error fetching sandwiches:', error))
+      .finally(() => setIsLoading(false));
   }, []);
 
+  if (isLoading) {
+    return <LoadingSpinner label="Loading sandwiches..." />;
+  }
+
   return (
-    <div className="menu-grid">
-      {menuItems.map(item => (
-        <SandwichItem key={item.id} item={item} />
-      ))}
-    </div>
+    <>
+      <div className="menu-grid">
+        {menuItems.map(item => (
+          <SandwichItem key={item.id} item={item} />
+        ))}
+      </div>
+
+      <p className="disclaimer">
+        *We are happy to accommodate cooking preferences, but be advised that consuming raw or undercooked items may carry health risks.
+      </p>
+      <p className="disclaimer">
+        *Taxes not included
+      </p>
+    </>
   );
 };
 

@@ -7,6 +7,7 @@ import AdminMobileMenu from '../components/admin/AdminMobileMenu';
 import AdminHeader from '../components/admin/AdminHeader';
 import AdminCategoryPills from '../components/admin/AdminCategoryPills';
 import AddItemForm from '../components/admin/AddItemForm';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { DELI_API_ROOT } from '../Constants';
 import { getAuthToken, setAuthToken, clearAuthToken } from '../utils/authToken';
 import { ADMIN_CATEGORIES } from '../utils/adminCategories';
@@ -21,6 +22,7 @@ function Edit() {
     const [selectedKey, setSelectedKey] = useState('sandwiches');
     const [searchQuery, setSearchQuery] = useState('');
     const [isAddingItem, setIsAddingItem] = useState(false);
+    const [isMenuLoading, setIsMenuLoading] = useState(true);
 
     // If a token from a previous login is still saved, skip straight to the
     // admin view instead of making them log in again every time they visit
@@ -33,15 +35,21 @@ function Edit() {
         }
     }, []);
 
-    const loadMenuData = () => {
+    // showSpinner is only true for the initial mount fetch — refetches
+    // triggered by create/delete/move should update the grid in place,
+    // not flash the whole admin-main back to a loading screen.
+    const loadMenuData = ({ showSpinner } = {}) => {
+        if (showSpinner) setIsMenuLoading(true);
+
         fetch(API_URL)
             .then(res => res.json())
             .then(data => setGroupedItems(data))
-            .catch(err => console.error('Error fetching menu data:', err));
+            .catch(err => console.error('Error fetching menu data:', err))
+            .finally(() => setIsMenuLoading(false));
     };
 
     useEffect(() => {
-        loadMenuData();
+        loadMenuData({ showSpinner: true });
     }, []);
 
     const handleLogin = async (e, form) => {
@@ -109,47 +117,53 @@ function Edit() {
             <AdminMobileMenu onLogout={handleLogout} />
 
             <main className="admin-main">
-                <AdminHeader
-                    selectedKey={selectedKey}
-                    itemCount={filteredItems.length}
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    onAddClick={() => setIsAddingItem(true)}
-                />
+                {isMenuLoading ? (
+                    <LoadingSpinner label="Loading menu..." />
+                ) : (
+                    <>
+                        <AdminHeader
+                            selectedKey={selectedKey}
+                            itemCount={filteredItems.length}
+                            searchQuery={searchQuery}
+                            onSearchChange={setSearchQuery}
+                            onAddClick={() => setIsAddingItem(true)}
+                        />
 
-                <AdminCategoryPills
-                    counts={counts}
-                    selectedKey={selectedKey}
-                    onSelect={(key) => { setSelectedKey(key); setSearchQuery(''); setIsAddingItem(false); }}
-                />
+                        <AdminCategoryPills
+                            counts={counts}
+                            selectedKey={selectedKey}
+                            onSelect={(key) => { setSelectedKey(key); setSearchQuery(''); setIsAddingItem(false); }}
+                        />
 
-                {isAddingItem && (
-                    <AddItemForm
-                        categoryValue={selectedCategory?.categoryValue}
-                        onCreated={handleItemCreated}
-                        onCancel={() => setIsAddingItem(false)}
-                    />
+                        {isAddingItem && (
+                            <AddItemForm
+                                categoryValue={selectedCategory?.categoryValue}
+                                onCreated={handleItemCreated}
+                                onCancel={() => setIsAddingItem(false)}
+                            />
+                        )}
+
+                        <div className="admin-item-grid">
+                            {filteredItems.map((item) => {
+                                // isFirst/isLast reflect the item's position within its
+                                // full category list, not the (possibly search-filtered)
+                                // list actually on screen — reordering is about the
+                                // category's real stored order, so the up/down buttons
+                                // shouldn't behave differently just because a search is
+                                // active and hiding some of the items around it.
+                                const indexInCategory = items.findIndex((i) => i.id === item.id);
+                                const isFirst = indexInCategory === 0;
+                                const isLast = indexInCategory === items.length - 1;
+
+                                const props = { key: item.id, item, isFirst, isLast, onDeleted: handleItemDeleted, onMoved: loadMenuData };
+
+                                return selectedKey === 'sandwiches'
+                                    ? <EditItemCard {...props} />
+                                    : <EditItemCardCharlie {...props} />;
+                            })}
+                        </div>
+                    </>
                 )}
-
-                <div className="admin-item-grid">
-                    {filteredItems.map((item) => {
-                        // isFirst/isLast reflect the item's position within its
-                        // full category list, not the (possibly search-filtered)
-                        // list actually on screen — reordering is about the
-                        // category's real stored order, so the up/down buttons
-                        // shouldn't behave differently just because a search is
-                        // active and hiding some of the items around it.
-                        const indexInCategory = items.findIndex((i) => i.id === item.id);
-                        const isFirst = indexInCategory === 0;
-                        const isLast = indexInCategory === items.length - 1;
-
-                        const props = { key: item.id, item, isFirst, isLast, onDeleted: handleItemDeleted, onMoved: loadMenuData };
-
-                        return selectedKey === 'sandwiches'
-                            ? <EditItemCard {...props} />
-                            : <EditItemCardCharlie {...props} />;
-                    })}
-                </div>
             </main>
         </div>
     );

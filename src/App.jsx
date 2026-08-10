@@ -56,30 +56,8 @@ function Layout() {
       </header> */}
 
       <main>
-        {location.pathname === '/sandwiches' && (
-          <>
-            <MenuSandwiches />
-            
-            <p className="disclaimer">
-              *We are happy to accommodate cooking preferences, but be advised that consuming raw or undercooked items may carry health risks.
-            </p>
-            <p className='disclaimer'>
-              *Taxes not included
-           </p>
-          </>
-        )}
-
-        {location.pathname === '/items' && (
-          <>
-           <MenuDelta />
-           <p className='disclaimer'>
-              *Taxes not included
-           </p>
-            <p className="disclaimer">
-              *Please inform your server of any allergies. Our food is prepared in kitchens that may use nuts, dairy, gluten, shellfish, and other allergens.
-            </p>
-          </>
-        )}
+        {location.pathname === '/sandwiches' && <MenuSandwiches />}
+        {location.pathname === '/items' && <MenuDelta />}
       </main>
     </div>
   );

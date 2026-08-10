@@ -7,6 +7,7 @@ import sides1 from "/images/sides1.png";
 import sides2 from "/images/sides2.png";
 import dessert1 from "/images/dessert1.png";
 import dessert2 from "/images/dessert2.png";
+import LoadingSpinner from "./LoadingSpinner";
 import { DELI_API_ROOT } from "../Constants";
 
 const MenuDelta = () => {
@@ -50,7 +51,7 @@ const MenuDelta = () => {
   }, []);
 
   if (!menuData) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner label="Loading menu..." />;
   }
 
   // Match categories from API to your layout
@@ -196,15 +197,24 @@ const MenuDelta = () => {
   };
 
   return (
-    <div className="deli-menu-container">
-      <div className="column menu-column-images">
-        <RenderImagesSection />
+    <>
+      <div className="deli-menu-container">
+        <div className="column menu-column-images">
+          <RenderImagesSection />
+        </div>
+        <div className="column menu-column-main">
+          {renderPairedSections(column2Sections)}
+        </div>
+        <div className="column menu-column-side">{renderPairedSections(column3Sections)}</div>
       </div>
-      <div className="column menu-column-main">
-        {renderPairedSections(column2Sections)}
-      </div>
-      <div className="column menu-column-side">{renderPairedSections(column3Sections)}</div>
-    </div>
+
+      <p className="disclaimer">
+        *Taxes not included
+      </p>
+      <p className="disclaimer">
+        *Please inform your server of any allergies. Our food is prepared in kitchens that may use nuts, dairy, gluten, shellfish, and other allergens.
+      </p>
+    </>
   );
 };
 

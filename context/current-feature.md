@@ -1,6 +1,6 @@
 # Current Feature
 
-Spec: [context/Features/responsiveness-upgrades.md](Features/responsiveness-upgrades.md)
+Spec: [context/Features/loading-screens.md](Features/loading-screens.md)
 
 ## Status
 Complete — user-verified live in browser.
@@ -8,18 +8,15 @@ Complete — user-verified live in browser.
 ## Goals
 
 <!-- Bullet points of what success looks like -->
-- `/sandwiches` on mobile: background extends to cover all sandwich display boxes (currently cuts off short).
-- `/sandwiches` on mobile: top-right options/hamburger button opening a nav list limited to 'View Sandwiches', 'View Other Food', 'Login'.
-- `/items` on mobile: fully responsive — images hidden, each section scrollable, top-left options button with the same nav list as above.
-- `/edit` on mobile: `.admin-sidebar` hidden (nav already covered by `.admin-pill` buttons), but Logout / View Sandwiches / View Other Items are still reachable, folded into a top-right options button.
+- Whenever a screen is waiting on data from the backend, show a loading state with a spinning/animated indicator instead of a blank or stale screen.
 
 ## Notes
 
 <!-- Additional context, constraints, or details from spec -->
-- Spec extracted from `context/Features/draft.md` ("Mobile Responsivness Updgrades" section) into `context/Features/responsiveness-upgrades.md`, following the pattern used for prior features.
-- Three separate screens affected: `/sandwiches` (`MenuSandwiches`), `/items` (`MenuDelta`), `/edit` (admin panel). Each needs its own mobile nav/options-button treatment per the goals above.
-- Existing responsive scaffolding to check before building new: `.show-on-mobile` / `.show-on-large` class pairs and `MenuButtons.jsx` (current mobile hamburger menu) per `CLAUDE.md`'s routing notes — likely the starting point for the new options buttons rather than building from scratch.
-- `/edit`'s `.admin-sidebar` vs `.admin-pill` components live under `src/components/admin/` (`AdminSidebar`, `AdminCategoryPills`) — need to confirm exactly what `.admin-pill` currently covers before hiding the sidebar on mobile.
+- Spec text is minimal: "Please have a loading screen with a spinning loading gif if the database has not returned the necessary data yet."
+- Data-fetching screens identified from the current codebase that would need this: `MenuSandwiches.jsx` (`/sandwiches`, fetches `/api/MenuItems/sandwiches`), `MenuDelta.jsx` (`/items`, fetches `/api/MenuItems` — already has an ad hoc `if (!menuData) return <div>Loading...</div>` text-only placeholder, no spinner), `Edit.jsx` (`/edit` admin panel, fetches `/api/MenuItems/grouped` via `loadMenuData()`). None of these currently show a real spinner/animation — `MenuSandwiches.jsx` and `Edit.jsx` render nothing (empty state) until data arrives, not even placeholder text.
+- Backend is on Render free tier with a ~30-50s cold start after 15 min idle (per `CLAUDE.md`'s Deploys section) — real visitors will actually see this loading state for a nontrivial stretch of time on the first request, not just a network-latency flicker, so it's not a cosmetic-only nicety.
+- Open decision: a shared/reusable loading component (single spinner used across all three screens) vs. per-screen implementations — leaning shared given the identical need across `MenuSandwiches`/`MenuDelta`/`Edit`.
 
 ## History
 
@@ -91,3 +88,8 @@ Complete — user-verified live in browser.
 - 2026-08-10: [responsiveness-upgrades] `MenuDelta.jsx` (`/items`) refactored off inline `style={{display:'flex', ...}}` props (which block CSS media-query overrides) onto real classes (`menu-column-images`, `menu-column-main`, `menu-column-side`, `menu-row`) with matching desktop CSS so pixel output is unchanged there. Added a mobile media query: hides the left image-gallery column entirely, drops `.deli-menu-container`'s fixed `height: 88vh` (which was silently clipping overflow content — the real cause of "not responsive at all") in favor of `height: auto` with normal page scroll, and stacks the paired Chicken Wings/Pizza row.
 - 2026-08-10: [responsiveness-upgrades] `/edit` mobile: new `src/components/admin/AdminMobileMenu.jsx` (fixed top-left button + dropdown, same visual pattern as `MenuButtons`) holds Logout/View Sandwiches/View Other Items, reusing `Edit.jsx`'s existing `handleLogout`. `.admin-sidebar` now `display: none` below 900px (previously collapsed into a horizontal wrapping row) since category navigation is already covered by the `.admin-pill` buttons already rendered in `.admin-main`.
 - 2026-08-10: [responsiveness-upgrades] Verified `/sandwiches` and `/items` visually via Playwright screenshots at mobile width (background no longer cuts off, dropdown opens correctly, `/items` stacks with images hidden and full page scroll working) after user's manual browser check confirmed the background fix live. `/edit`'s mobile admin layout was verified by user directly in-browser. `npm run lint` (same 3 pre-existing unrelated `MenuDelta.jsx` errors, confirmed via `git stash` diff against `master`) and `npm run build` both clean.
+- 2026-08-10: [loading-screens] Branch `loading-screens` created off `master`; feature spec linked from `context/Features/loading-screens.md`. Surveyed the three data-fetching screens (`MenuSandwiches`, `MenuDelta`, `Edit`) that currently show a blank or plain-text state while waiting on the backend.
+- 2026-08-10: [loading-screens] Built a shared `src/components/LoadingSpinner.jsx` (CSS ring spinner, no gif asset — animated indicator rather than a literal .gif file) with `@keyframes spin` in `App.css`, matching the admin panel's existing accent color (`#f2600c`). Wired into `MenuSandwiches.jsx` (new `isLoading` state, previously showed nothing at all while loading), `MenuDelta.jsx` (swapped its existing plain-text `Loading...` placeholder for the spinner), and `Edit.jsx`'s admin panel (new `isMenuLoading` state guarding the `.admin-main` content — sidebar/mobile nav stay visible regardless so navigation isn't blocked by data loading).
+- 2026-08-10: [loading-screens] `Edit.jsx`'s `loadMenuData` now takes an optional `{ showSpinner }` flag so only the initial mount fetch shows the full loading screen — refetches after create/delete/move (already silent, in-place updates) don't flash the grid back to a spinner.
+- 2026-08-10: [loading-screens] User caught that the page disclaimer text (tax/allergy notices, previously rendered in `App.jsx`'s `Layout` as siblings of `MenuSandwiches`/`MenuDelta`, not children) kept showing above/below the spinner during loading. Fixed by moving the disclaimer paragraphs into each component's own returned JSX, after the loading check, so they're part of the same loaded-only render; `Layout` now just renders the bare `<MenuSandwiches />`/`<MenuDelta />`.
+- 2026-08-10: [loading-screens] Verified with `npm run lint` (same 3 pre-existing unrelated `MenuDelta.jsx` errors) and `npm run build`, both clean. User confirmed all three loading states look correct live in the dev server. Feature marked complete.

@@ -281,6 +281,36 @@ ul{
   color: #D1591C !important;
 }
 
+.loading-spinner-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 1rem;
+  width: 100%;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid rgba(242, 96, 12, 0.15);
+  border-top-color: #f2600c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-spinner-label {
+  color: #78716c;
+  font-weight: bold;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 
 /* Hide by default */
 .show-on-mobile {
