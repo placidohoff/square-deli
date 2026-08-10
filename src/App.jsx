@@ -45,14 +45,15 @@ function Layout() {
     <div className="container-fluid">
       <KeyboardToggle />
       <MenuButtons />
+      <br />
 
-      <header className="text-center mb-5">
+      {/* <header className="text-center mb-5">
         {location.pathname === '/sandwiches' && (
           <h1 className="display-1 title anton d-flex justify-content-center mt-4">
             Sandwiches
           </h1>
         )}
-      </header>
+      </header> */}
 
       <main>
         {location.pathname === '/sandwiches' && (

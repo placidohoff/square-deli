@@ -29,3 +29,8 @@ This needs to be accessible online
 # Video Export
 ## Overview
 I will paste screen shots of what is displayed on both menus. I need a 5 second video export of the current data of each screen.
+
+
+# Remodel the Admin Page
+## Overview
+The admin page to edit must be renovated. Please refer to the @context/Features/screenshots/edit-page-update.png

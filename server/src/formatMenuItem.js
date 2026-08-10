@@ -16,6 +16,27 @@ export function formatMenuItem(item) {
   };
 }
 
+// Size-based pricing arrives on multipart requests as separate fields like
+// "Prices[0].Size" and "Prices[0].Price" (FormData has no native array/object
+// support — this bracket notation is just how the old .NET model binder
+// expected a list to be flattened, and the frontend still sends it that
+// way). Shared by both POST (create) and PUT (update) since both accept the
+// same shape. Collects however many indexes were sent and rebuilds the array
+// from them.
+export function parsePricesFromBody(body) {
+  const priceIndexes = new Set();
+  for (const key of Object.keys(body)) {
+    const match = key.match(/^Prices\[(\d+)\]\./);
+    if (match) priceIndexes.add(Number(match[1]));
+  }
+  return [...priceIndexes]
+    .sort((a, b) => a - b)
+    .map((i) => ({
+      size: body[`Prices[${i}].Size`],
+      price: Number(body[`Prices[${i}].Price`]),
+    }));
+}
+
 // The old ASP.NET API's GET /api/MenuItems/grouped keyed its response by
 // these camelCase names rather than the `category` string stored on each
 // item — Edit.jsx destructures the response using exactly these keys

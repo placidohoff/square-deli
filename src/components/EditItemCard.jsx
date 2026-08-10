@@ -1,24 +1,30 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { DELI_API_ROOT } from '../Constants';
 import { resolveImageUrl } from '../utils/resolveImageUrl';
 import { getAuthToken, clearAuthToken } from '../utils/authToken';
+import AdminModal from './admin/AdminModal';
 
-const EDIT_API =  DELI_API_ROOT + '/api/MenuItems';
-// const EDIT_API = 'https://deliprojectapi-eheyg4exevd7azgd.canadaeast-01.azurewebsites.net/api/MenuItems';
-// const API_URL = 'https://square-deli-menu.web.app/sandwiches';
-// const UPLOAD_URL = 'https://square-deli-menu.web.app/upload-image';
+const EDIT_API = DELI_API_ROOT + '/api/MenuItems';
 
-export default function EditItemCard({ item }) {
+// Handles a 401 the same way everywhere it can happen (expired/missing
+// token): drop the stale token and send the admin back to the login screen,
+// rather than showing a generic "update failed" that doesn't explain why.
+function handleUnauthorized() {
+    clearAuthToken();
+    alert('Your session has expired. Please log in again.');
+    window.location.reload();
+}
+
+export default function EditItemCard({ item, onDeleted }) {
     const [isEditing, setIsEditing] = useState(false);
     const [currentItem, setCurrentItem] = useState(item);
-    const [selectedImage, setSelectedImage] = useState(null);
 
-    const [form, setForm] = useState({
-        name: item.name,
-        description: item.description,
-        prices: Array.isArray(item.prices) ? item.prices : [],
-    });
+    // A sandwich either has a single basePrice, or Large/Roll prices in
+    // `prices` — never both (see server/prisma/schema.prisma). Which one
+    // this particular item uses is fixed by its existing data, so the edit
+    // form only shows the field(s) that actually apply to it.
+    const isSizePriced = Array.isArray(item.prices) && item.prices.length > 0;
 
     const [name, setName] = useState(item.name || '');
     const [description, setDescription] = useState(item.description || '');
@@ -27,6 +33,7 @@ export default function EditItemCard({ item }) {
     const [sizeLargePrice, setSizeLargePrice] = useState(prices[0]?.price || '');
     const [sizeSmallPrice, setSizeSmallPrice] = useState(prices[1]?.price || '');
     const [file, setFile] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleEditSubmit = async () => {
         try {
@@ -57,12 +64,7 @@ export default function EditItemCard({ item }) {
             });
 
             if (res.status === 401) {
-                // The admin's session token is missing/expired — send them
-                // back to the login screen rather than showing a generic
-                // "update failed" that doesn't explain why.
-                clearAuthToken();
-                alert("Your session has expired. Please log in again.");
-                window.location.reload();
+                handleUnauthorized();
                 return;
             }
 
@@ -77,109 +79,140 @@ export default function EditItemCard({ item }) {
         }
     };
 
+    const handleDelete = async (e) => {
+        e.stopPropagation();
+        if (!window.confirm(`Delete "${currentItem.name}"? This can't be undone.`)) return;
+
+        setIsDeleting(true);
+        try {
+            const res = await fetch(`${EDIT_API}/${currentItem.id}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${getAuthToken()}` },
+            });
+
+            if (res.status === 401) {
+                handleUnauthorized();
+                return;
+            }
+
+            if (!res.ok) throw new Error("Failed to delete item");
+
+            onDeleted(currentItem.id);
+        } catch (err) {
+            console.error(err);
+            alert("Delete failed. Please try again.");
+            setIsDeleting(false);
+        }
+    };
+
     return (
         <>
-            {isEditing ? (
-                <div className='editItemForm' style={{ border: "1px solid black", borderRadius: "10px", padding: "10px", marginBottom: "10px" }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <div style={{ width: '100%', paddingRight: '10px' }}>
+            <div className="admin-item-card">
+                {currentItem.imageUrl && (
+                    <img
+                        className="admin-item-image"
+                        src={resolveImageUrl(currentItem.imageUrl)}
+                        alt={currentItem.name}
+                    />
+                )}
+                <div className="admin-item-card-header">
+                    <h3 className="admin-item-name">{currentItem.name}</h3>
+                    {currentItem.basePrice ? (
+                        <span className="admin-price-badge">${currentItem.basePrice.toFixed(2)}</span>
+                    ) : (
+                        <span className="admin-price-badge admin-price-badge-multi">
+                            {currentItem.prices.map((p) => `${p.size}: $${p.price.toFixed(2)}`).join(' / ')}
+                        </span>
+                    )}
+                </div>
+
+                {currentItem.description && (
+                    <p className="admin-item-desc">{currentItem.description}</p>
+                )}
+
+                <div className="admin-item-footer">
+                    <button type="button" className="admin-edit-btn" onClick={() => setIsEditing(true)}>
+                        <FiEdit2 /> Edit
+                    </button>
+                    <button type="button" className="admin-delete-btn" onClick={handleDelete} disabled={isDeleting}>
+                        <FiTrash2 /> {isDeleting ? 'Deleting...' : 'Delete'}
+                    </button>
+                </div>
+            </div>
+
+            {isEditing && (
+                <AdminModal title={`Edit ${currentItem.name}`} onClose={() => setIsEditing(false)}>
+                    <div className="admin-modal-form">
+                        <label className="admin-modal-field">
+                            <span>Name</span>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder="Name"
-                                style={{ width: '100%' }}
                             />
-                            <br />
+                        </label>
+                        <label className="admin-modal-field">
+                            <span>Description</span>
                             <textarea
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Description"
                                 rows={3}
-                                style={{ width: '100%' }}
                             />
-                            <br />
-                            <input
-                                type="text"
-                                value={basePrice}
-                                onChange={(e) => setBasePrice(e.target.value)}
-                                placeholder={currentItem.basePrice ? currentItem.basePrice : 'None'}
-                            />
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                                <input
-                                    type="text"
-                                    value={sizeLargePrice}
-                                    onChange={(e) => setSizeLargePrice(e.target.value)}
-                                    placeholder={currentItem.prices?.[0]?.price || 'None'}
-                                />
-                                <input
-                                    type="text"
-                                    value={sizeSmallPrice}
-                                    onChange={(e) => setSizeSmallPrice(e.target.value)}
-                                    placeholder={currentItem.prices?.[1]?.price || 'None'}
-                                />
+                        </label>
+
+                        {isSizePriced ? (
+                            <div className="admin-modal-price-row">
+                                <label className="admin-modal-field">
+                                    <span>Large price</span>
+                                    <input
+                                        type="text"
+                                        value={sizeLargePrice}
+                                        onChange={(e) => {
+                                            setSizeLargePrice(e.target.value);
+                                            setPrices([{ size: 'Large', price: e.target.value }, prices[1] || { size: 'Roll', price: sizeSmallPrice }]);
+                                        }}
+                                    />
+                                </label>
+                                <label className="admin-modal-field">
+                                    <span>Roll price</span>
+                                    <input
+                                        type="text"
+                                        value={sizeSmallPrice}
+                                        onChange={(e) => {
+                                            setSizeSmallPrice(e.target.value);
+                                            setPrices([prices[0] || { size: 'Large', price: sizeLargePrice }, { size: 'Roll', price: e.target.value }]);
+                                        }}
+                                    />
+                                </label>
                             </div>
-                            <br />
-                            <div>
+                        ) : (
+                            <label className="admin-modal-field">
+                                <span>Price</span>
+                                <input
+                                    type="text"
+                                    value={basePrice}
+                                    onChange={(e) => setBasePrice(e.target.value)}
+                                />
+                            </label>
+                        )}
+
+                        <label className="admin-modal-field">
+                            <span>Photo</span>
+                            <div className="admin-modal-image-row">
                                 <img
-                                    style={{ maxWidth: '300px' }}
-                                    className='img-fluid'
                                     src={resolveImageUrl(currentItem.imageUrl)}
                                     alt="Menu item"
                                 />
-                                <br />
                                 <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} />
                             </div>
-                        </div>
+                        </label>
 
-                        <div style={{display: 'flex', flexDirection: 'column', width: '100%'}}>
-                            <button style={{marginBottom: '10px'}} className='btn-save' onClick={handleEditSubmit}>Save</button>
-                            <button className='btn-cancel' onClick={() => setIsEditing(false)}>Cancel</button>
+                        <div className="admin-modal-actions">
+                            <button type="button" className="admin-modal-save" onClick={handleEditSubmit}>Save</button>
+                            <button type="button" className="admin-modal-cancel" onClick={() => setIsEditing(false)}>Cancel</button>
                         </div>
                     </div>
-                </div>
-            ) : (
-                <div
-                    className='editShowItem'
-                    onClick={() => setIsEditing(true)}
-                    style={{
-                        border: '1px solid',
-                        marginBottom: '5px',
-                        borderRadius: '5px',
-                        padding: '5px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        justifyContent: 'space-between'
-                    }}
-                >
-                    <div style={{ width: '80%' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                            <strong>{currentItem.name}:</strong>
-                            <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
-                                {currentItem.basePrice
-                                    ? <span>${currentItem.basePrice.toFixed(2)}</span>
-                                    : currentItem.prices.map((p, idx) => (
-                                        <span key={idx}>
-                                            {p.size}: ${p.price.toFixed(2)}
-                                        </span>
-                                    ))
-                                }
-                            </div>
-                        </div>
-                        <br />
-                        <div style={{ width: '90%' }}>
-                            {currentItem.description}
-                        </div>
-                    </div>
-                    <div>
-                        <img
-                            style={{ maxWidth: '100px' }}
-                            className='img-fluid'
-                            src={resolveImageUrl(currentItem.imageUrl)}
-                            alt="Menu item"
-                        />
-                    </div>
-                </div>
+                </AdminModal>
             )}
         </>
     );

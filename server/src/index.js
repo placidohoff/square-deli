@@ -7,7 +7,7 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import { prisma } from './prisma.js';
-import { formatMenuItem, CATEGORY_TO_GROUP_KEY } from './formatMenuItem.js';
+import { formatMenuItem, CATEGORY_TO_GROUP_KEY, parsePricesFromBody } from './formatMenuItem.js';
 import { uploadImage } from './cloudinary.js';
 import { login, requireAuth } from './auth.js';
 
@@ -101,23 +101,7 @@ app.put('/api/MenuItems/:id', requireAuth, upload.single('File'), async (req, re
   try {
     const id = Number(req.params.id);
     const { Name, BasePrice, Description } = req.body;
-
-    // Size-based pricing arrives as separate fields like "Prices[0].Size"
-    // and "Prices[0].Price" (FormData has no native array/object support —
-    // this bracket notation is just how the old .NET model binder expected
-    // a list to be flattened, and EditItemCard.jsx still sends it that way).
-    // Collect however many indexes were sent and rebuild the array from them.
-    const priceIndexes = new Set();
-    for (const key of Object.keys(req.body)) {
-      const match = key.match(/^Prices\[(\d+)\]\./);
-      if (match) priceIndexes.add(Number(match[1]));
-    }
-    const prices = [...priceIndexes]
-      .sort((a, b) => a - b)
-      .map((i) => ({
-        size: req.body[`Prices[${i}].Size`],
-        price: Number(req.body[`Prices[${i}].Price`]),
-      }));
+    const prices = parsePricesFromBody(req.body);
 
     const data = {
       name: Name,
@@ -149,6 +133,63 @@ app.put('/api/MenuItems/:id', requireAuth, upload.single('File'), async (req, re
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update menu item' });
+  }
+});
+
+// POST /api/MenuItems — creates a new item, used by the admin "+ Add Item"
+// form. Same multipart shape as PUT (Name/Category/BasePrice/Description/
+// Prices[i].*/File), minus an :id since there isn't one yet.
+app.post('/api/MenuItems', requireAuth, upload.single('File'), async (req, res) => {
+  try {
+    const { Name, Category, BasePrice, Description } = req.body;
+
+    if (!Name || !Category) {
+      res.status(400).json({ error: 'Name and Category are required' });
+      return;
+    }
+
+    const prices = parsePricesFromBody(req.body);
+    const imageUrl = req.file ? await uploadImage(req.file.buffer) : null;
+
+    const created = await prisma.menuItem.create({
+      data: {
+        name: Name,
+        category: Category,
+        description: Description || null,
+        basePrice: BasePrice === '' || BasePrice === undefined ? null : Number(BasePrice),
+        imageUrl,
+        // Omitting `prices` entirely (rather than passing an empty create
+        // list) when there's nothing to add avoids creating a pointless
+        // empty nested write.
+        ...(prices.length > 0 && { prices: { create: prices } }),
+      },
+      include: { prices: true },
+    });
+
+    res.status(201).json(formatMenuItem(created));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create menu item' });
+  }
+});
+
+// DELETE /api/MenuItems/:id — used by the admin Delete button. Related
+// Price rows are removed automatically (schema.prisma sets onDelete: Cascade
+// on the MenuItem/Price relation), so there's nothing extra to clean up here.
+app.delete('/api/MenuItems/:id', requireAuth, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    await prisma.menuItem.delete({ where: { id } });
+    res.status(204).end();
+  } catch (err) {
+    if (err.code === 'P2025') {
+      // Prisma's "record to delete does not exist" error — already gone,
+      // which for a delete is close enough to success.
+      res.status(404).json({ error: 'Menu item not found' });
+      return;
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete menu item' });
   }
 });
 
