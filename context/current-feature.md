@@ -1,23 +1,23 @@
 # Current Feature
 
-Spec: [context/Features/reorder-items.md](Features/reorder-items.md)
+Spec: [context/Features/hosting.md](Features/hosting.md)
 
 ## Status
-Complete — user-verified in the browser (moved items in multiple categories, boundary buttons disable correctly, order persists across reload). Not yet committed/merged.
+Backend deployed to Render and verified working; frontend wired to use it in production. Pending merge/push so the live Firebase-hosted site actually picks up the change (Firebase Hosting only redeploys on push to `master`).
 
 ## Goals
 
 <!-- Bullet points of what success looks like -->
-- Admin can rearrange the display order of menu items from `/edit`, for every category — not just sandwiches (spec is explicit: "Not just sandwiches but any item").
-- Per the earlier decision when this was deferred out of `remodel-admin-page`: up/down move buttons on each card, not drag-and-drop.
+- The site is actually usable by a real visitor online, not just on the developer's own machine.
 
 ## Notes
 
 <!-- Additional context, constraints, or details from spec -->
-- Spec text is minimal, same pattern as the last two features — this was already scoped out during `remodel-admin-page` (see its History entries), so the design decisions (up/down buttons, separate feature) predate this doc.
-- Current state: both `GET /api/MenuItems` and `GET /api/MenuItems/grouped` always `orderBy: { id: 'asc' }` — display order is just creation order, nothing persisted about a deliberate order.
-- Plan: add a `sortOrder` field to `MenuItem` (new migration), backfill existing rows to match current `id` order so nothing visibly jumps around on first deploy, switch both `GET` endpoints' `orderBy` to `sortOrder`, add a `requireAuth`-protected move endpoint (swap `sortOrder` with the adjacent item in the same category), and add up/down buttons to `EditItemCard.jsx`/`EditItemCardCharlie.jsx`'s footer (disabled at the top/bottom of each category's list).
-- Move/reorder should operate on the item's position within its full category list, not the search-filtered subset — reordering "within what's currently visible" while a search is active would be confusing and wouldn't match what's actually stored.
+- Spec text is minimal ("This needs to be accessible online"), extracted from `context/Features/draft.md`.
+- **The frontend is already deployed and has been this whole time**: `firebase.json` + `.firebaserc` (project `square-deli-menu`) + `.github/workflows/firebase-hosting-{merge,pull-request}.yml` auto-deploy `npm run build`'s `dist/` to Firebase Hosting on every push to `master` (and PR preview channels). This predates the current session; nothing about it changed during the Postgres migration or admin work.
+- **The real gap is the backend.** `server/` (Express + Prisma + Neon + Cloudinary) only runs locally — there is no deployment for it anywhere. `src/Constants.js`'s `DELI_API_ROOT` is hardcoded to `http://localhost:5000`, which resolves to *whoever is viewing the page's own machine* once the static frontend is live — so every real visitor's API calls would silently fail against their own loopback address. This is the actual blocker "accessible online" needs to solve, not the frontend.
+- Neon (DB) and Cloudinary (images) are already cloud-hosted — no change needed there, just need the deployed backend to reach them with the same credentials currently in `server/.env`.
+- Open decision: where does `server/` actually get deployed (Render, Railway, Fly.io, etc.), and how does `DELI_API_ROOT` differ between local dev (`localhost:5000`) and production (whatever public URL the host gives) — needs an environment-aware config rather than hardcoding one value.
 
 ## History
 
@@ -72,3 +72,9 @@ Complete — user-verified in the browser (moved items in multiple categories, b
 - 2026-08-10: [reorder-items] Added `PUT /api/MenuItems/:id/move` (`requireAuth`-protected, body `{ direction: 'up' | 'down' }`): finds the nearest neighbor in the same category by `sortOrder` and swaps the two in a transaction; a no-op `{ moved: false }` response (not an error) if already first/last, since the UI is expected to disable the button there but a stale page could still call it. Verified the auth-gating via curl (401 without a token).
 - 2026-08-10: [reorder-items] Frontend: added up/down buttons (`react-icons/fi` chevrons) to `EditItemCard.jsx`/`EditItemCardCharlie.jsx`'s footer; moved the duplicated `handleUnauthorized` helper (previously copy-pasted in both files) into `authToken.js` as a shared export while touching both files anyway. `Edit.jsx` computes `isFirst`/`isLast` from the item's position in the full (unfiltered) category list — not the search-filtered view — and passes a shared `onMoved={loadMenuData}` to refetch after a successful move, same refetch-based pattern already used for create/delete.
 - 2026-08-10: [reorder-items] `npm run lint`/`npm run build` verified clean (same 3 pre-existing `MenuDelta.jsx` errors, unrelated). User tested in the browser: moved items across multiple categories, confirmed boundary buttons disable correctly, confirmed order survives a page reload.
+- 2026-08-10: [hosting] Branch `hosting` created off `master`; feature spec extracted from `context/Features/draft.md` into `context/Features/hosting.md`. Discovered mid-scoping that Firebase Hosting for the frontend has been live and auto-deploying via GitHub Actions this entire time (predates this session) — the actual gap is that `server/` has never been deployed anywhere, so the real production site's API calls would fail once anyone but the developer loads it.
+- 2026-08-10: [hosting] Chose Render (free tier) for the backend over Railway/Fly.io/a VPS — closest match to the dashboard-driven Neon/Cloudinary signup flow already used, at the cost of a ~30-50s cold start after 15 min idle. Added `server`'s `prisma:deploy` script (`prisma migrate deploy`, the non-interactive counterpart to `migrate dev` used locally) so Render's start command applies pending migrations on every deploy automatically. Walked user through creating the Render Web Service (root directory `server`, build `npm install`, start `npm run prisma:deploy && npm start`) and setting the same 6 env vars from `server/.env` directly in Render's dashboard.
+- 2026-08-10: [hosting] First deploy failed: `Missing script: "prisma:deploy"` — the script only existed in the local uncommitted working tree, not in what Render pulled from GitHub (Render watches `master` directly, no GitHub Actions involved for the backend, unlike the frontend). Fixed by stashing in-progress `hosting`-branch work, committing just the one-line `package.json` fix directly to `master` to unblock the live deploy, pushing, then returning to `hosting` and restoring the stash — avoided bundling an unrelated emergency fix into the eventual feature commit while still getting Render unblocked immediately.
+- 2026-08-10: [hosting] Redeploy succeeded. Curl-verified the live Render URL (`https://square-deli-api.onrender.com`) directly: same 54 items, grouped counts matching local dev exactly, confirming migrations applied correctly against the same Neon DB. Confirmed CORS (`cors()` default = `Access-Control-Allow-Origin: *`) already allows the Firebase Hosting origin with no changes needed.
+- 2026-08-10: [hosting] Made `src/Constants.js`'s `DELI_API_ROOT` environment-aware via Vite's built-in `import.meta.env.PROD`: the Render URL in a production build, `localhost:5000` in dev — no manual toggling between the two needed going forward. Verified by grepping the built `dist/` bundle: Render URL present, `localhost:5000` absent.
+- 2026-08-10: [hosting] Updated `CLAUDE.md`'s stale Backend section while documenting the new deploy setup — it still described the old hardcoded `admin1`/`admin789` login and called `/edit`/`PUT` "not yet verified through the UI," both long since superseded by `admin-screen` and `remodel-admin-page`. Rewrote to reflect current reality: real JWT auth, full admin panel, all 7 endpoints, and the two-target deploy setup (Firebase Hosting for frontend via GitHub Actions, Render for backend via its own native GitHub integration).

@@ -32,7 +32,10 @@ npm run prisma:studio   # browser GUI for browsing/editing the DB directly
 
 Both `npm run client` (repo root) and `cd server && npm run dev` need to be running for the site to work locally.
 
-Deploys to Firebase Hosting happen via GitHub Actions (`.github/workflows/firebase-hosting-*.yml`) on push to `master` and on PRs — both just run `npm run build` and deploy `dist/`. Firebase Hosting rewrites all paths to `/index.html` (SPA fallback for `react-router-dom`); there are no Firebase Functions in this repo.
+### Deploys — two separate targets, both auto-deploy on push to `master`
+- **Frontend** → Firebase Hosting, via GitHub Actions (`.github/workflows/firebase-hosting-*.yml`), which just runs `npm run build` and deploys `dist/`. Firebase Hosting rewrites all paths to `/index.html` (SPA fallback for `react-router-dom`); there are no Firebase Functions in this repo. Live at the `square-deli-menu` Firebase project's default URL.
+- **Backend** (`server/`) → Render (a Node Web Service, root directory `server`), watching `master` directly (not a GitHub Actions workflow — Render has its own native GitHub integration). Build command `npm install`; start command `npm run prisma:deploy && npm start` (`prisma:deploy` runs `prisma migrate deploy`, the non-interactive counterpart to `migrate dev`, so pending migrations apply automatically on every deploy). Free tier — spins down after 15 min idle, ~30-50s cold start on the next request after a quiet period. Env vars (`DATABASE_URL`, `DIRECT_URL`, `CLOUDINARY_*`, `JWT_SECRET`) are set directly in Render's dashboard, same values as `server/.env` but never committed anywhere.
+- `src/Constants.js`'s `DELI_API_ROOT` picks between the two automatically via Vite's built-in `import.meta.env.PROD`: the deployed Render URL in a production build, `http://localhost:5000` in dev. No manual toggling needed, but it does mean the Render URL is hardcoded in source (not a secret, just a public API endpoint) — if the Render service is ever recreated under a different URL, update it there.
 
 ## Architecture
 
@@ -46,18 +49,15 @@ This is a restaurant menu site (React 19 + Vite + react-router-dom + Bootstrap) 
 - `MenuButtons` renders the mobile hamburger menu (`.show-on-mobile`); `Layout`/menu components render the desktop view — look for `.show-on-large` / `.show-on-mobile` class pairs when touching responsive layout (see recent "responsive navigation" work).
 
 ### Backend
-Migration in progress (off an external ASP.NET Core Web API, onto Postgres/Neon via Prisma) — see `context/current-feature.md` for the full history. Current state:
+Fully migrated off the old external ASP.NET Core Web API onto Postgres/Neon via Prisma, deployed on Render — see `context/current-feature.md` for the full history.
 
-- `DELI_API_ROOT` in `src/Constants.js` points at `http://localhost:5000`, the new `server/` (Express + Prisma + Neon Postgres, all in this repo). The old ASP.NET API URLs are kept as commented-out lines above it for rollback.
-- `server/src/index.js` implements all 4 endpoints the frontend calls, matching the old API's response shapes: `GET /api/MenuItems`, `GET /api/MenuItems/grouped`, `GET /api/MenuItems/sandwiches`, `PUT /api/MenuItems/{id}` (multipart, incl. Cloudinary image upload via `server/src/cloudinary.js`). Schema in `server/prisma/schema.prisma`: a `MenuItem` model (`category`, `basePrice`) with related `Price` rows for sandwiches' size-based pricing.
-- **Verified**: the `GET` endpoints — user has run the site with the ASP.NET API fully shut down and confirmed `/sandwiches` and `/items` both work correctly against the new backend.
-- **Not yet verified through the UI**: `/edit` and the `PUT` (image upload/editing) flow. They're implemented and were checked independently via curl, but exercising them through the actual admin UI is intentionally deferred to a separate future feature — don't assume they're production-ready without that pass.
-- `server/.env` (gitignored) holds `DATABASE_URL`/`DIRECT_URL` (Neon) and `CLOUDINARY_*` credentials — never put real values in `server/.env.example`, which is NOT gitignored and exists only as a placeholder template.
+- `server/src/index.js`: `GET /api/MenuItems`, `GET /api/MenuItems/grouped`, `GET /api/MenuItems/sandwiches`, `PUT /api/MenuItems/{id}` (multipart, incl. Cloudinary image upload via `server/src/cloudinary.js`), `PUT /api/MenuItems/{id}/move` (reorder within a category), `POST /api/MenuItems` (create), `DELETE /api/MenuItems/{id}`. All writes (`PUT`/`POST`/`DELETE`) are `requireAuth`-protected (JWT, see `server/src/auth.js`). Schema in `server/prisma/schema.prisma`: `MenuItem` (`category`, `basePrice`, `sortOrder`) with related `Price` rows for sandwiches' size-based pricing, plus `AdminUser` (single row, bcrypt-hashed password, managed via `npm run create-admin`).
+- `server/.env` (gitignored, both locally and as Render env vars) holds `DATABASE_URL`/`DIRECT_URL` (Neon), `CLOUDINARY_*`, and `JWT_SECRET` — never put real values in `server/.env.example`, which is NOT gitignored and exists only as a placeholder template.
 
-The `/edit` page's login (`src/pages/Edit.jsx`) is a hardcoded `admin1`/`admin789` check in the frontend.
+The `/edit` page (`src/pages/Edit.jsx`) has real login — `POST /api/auth/login` against `AdminUser`, JWT stored in `localStorage` (`src/utils/authToken.js`) and sent as `Authorization: Bearer` on write requests. It's a full admin panel now (see `src/components/admin/`): sidebar category nav, search, add/edit/delete items, reorder via up/down buttons — not the old ad hoc single-column list.
 
 ### Menu item card/editor variants
-`EditItemCard.jsx` (targets `/api/MenuItems`, used for sandwiches in `Edit.jsx`) and `EditItemCardCharlie.jsx` (same endpoint, used for the "other meals" categories in `Edit.jsx`) are both live, doing overlapping jobs with different form fields — this isn't a bug, it reflects sandwiches having size-based `prices` vs. other items using a single `basePrice`. `SandwichItem.jsx` is the live sandwich display card.
+`EditItemCard.jsx` (sandwiches — size-based `prices`) and `EditItemCardCharlie.jsx` (other categories — single `basePrice`) both render as cards in the admin grid and open a shared `AdminModal` (`src/components/admin/AdminModal.jsx`) for editing — overlapping logic reflecting the different pricing shapes, not a bug. `SandwichItem.jsx` is the live customer-facing sandwich display card.
 
 ### Images
 Sandwich images can now be either a bare local filename served from `public/images/sandwiches/` (legacy items) or a full Cloudinary URL (anything edited/uploaded through the new `PUT` endpoint). `src/utils/resolveImageUrl.js` handles both — use it (don't hand-roll the `/images/sandwiches/` prefix) anywhere a sandwich's `imageUrl`/`item.image` is rendered; `SandwichItem.jsx` and `EditItemCard.jsx` both already do. Other menu images (wings, pizza, etc.) are static imports from `public/images/` used directly in `MenuDelta.jsx`, not database-driven.
