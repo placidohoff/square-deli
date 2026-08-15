@@ -10,7 +10,7 @@
     "prisma:seed": "node prisma/seed.js",
     "prisma:studio": "prisma studio",
     "create-admin": "node prisma/create-admin.js",
-    "prisma:deploy": "prisma migrate deploy"
+    "prisma:deploy": "prisma generate && prisma migrate deploy"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
