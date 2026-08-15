@@ -65,3 +65,15 @@ model AdminUser {
   passwordHash String
   createdAt    DateTime @default(now())
 }
+
+// Single-row settings table, same pattern as AdminUser — one real row instead
+// of hardcoding this in the frontend, so an admin toggle can change it live
+// without a redeploy. tvModeEnabled drives the in-store TV display behavior
+// (screen wake lock + fullscreen prompt + on-page motion) on /sandwiches and
+// /items — off by default, since most visits to those routes are normal
+// browsing, not the physical menu-board TVs.
+model DisplaySettings {
+  id            Int      @id @default(autoincrement())
+  tvModeEnabled Boolean  @default(false)
+  updatedAt     DateTime @updatedAt
+}

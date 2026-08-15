@@ -8,6 +8,7 @@ import Landing from './pages/Landing';
 import MenuSandwiches from './components/MenuSandwiches';
 import MenuDelta from './components/MenuDelta';
 import MenuButtons from './components/MenuButtons';
+import { useTvDisplayMode } from './utils/useTvDisplayMode';
 
 function KeyboardToggle() {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ function KeyboardToggle() {
 
 function Layout() {
   const location = useLocation();
+  const { tvModeEnabled, needsTap, enterFullscreen } = useTvDisplayMode();
 
   return (
     <div className="container-fluid">
@@ -59,6 +61,14 @@ function Layout() {
         {location.pathname === '/sandwiches' && <MenuSandwiches />}
         {location.pathname === '/items' && <MenuDelta />}
       </main>
+
+      {tvModeEnabled && <div className="tv-mode-motion-bar" />}
+
+      {needsTap && (
+        <div className="tv-mode-tap-overlay" onClick={enterFullscreen}>
+          Tap to start display mode
+        </div>
+      )}
     </div>
   );
 }

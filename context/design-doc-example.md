@@ -24,6 +24,7 @@
 10. [Deployment](#10-deployment)
 11. [Alternatives considered](#11-alternatives-considered)
 12. [Known limitations & future work](#12-known-limitations--future-work)
+13. [Addendum: TV display mode](#13-addendum-tv-display-mode)
 
 ---
 
@@ -275,6 +276,37 @@ implicit in a dashboard setting nobody documented.
   corrupt data rather than visibly crash.
 - **No image optimization pipeline beyond Cloudinary's defaults.** Not a current problem, but worth revisiting
   if photo count or traffic grows enough for it to matter.
+
+## 13. Addendum: TV display mode
+
+*Added 2026-08-15 — a genuine follow-up feature, appended rather than folded back into the sections above,
+the way a real design doc picks up addenda instead of quietly rewriting its own history.*
+
+While scoping this, it turned out the two physical TVs (§1) that `/sandwiches` and `/items` are built for
+have a real, unsolved problem: they go idle/screensaver after a period without visible motion, and the
+previous fix was fully manual — re-recording a 5-second screen-capture loop by hand every time the menu
+changed, then playing that video on the TV instead of the live page.
+
+**Design.** A new single-row `DisplaySettings` table (`tvModeEnabled`, default `false`) — same pattern as
+`AdminUser` (§5): a real row instead of a hardcoded flag, specifically so it's reachable by two different
+devices at once (the admin's, and the TV's), which `localStorage` alone can't do.
+
+| Method | Path | Auth | Purpose |
+|---|---|---|---|
+| `GET` | `/api/settings/tv-mode` | — | Current on/off state; polled every 60s by whatever's showing the menu. |
+| `PUT` | `/api/settings/tv-mode` | JWT | The admin's toggle in `/edit`. |
+
+On the frontend, `/sandwiches` and `/items` combine three things while the setting is on: the Screen Wake
+Lock API (stops OS/device-level display sleep), a small always-present on-page motion element (a slow,
+low-key sweep — real pixel change is the only thing that satisfies a TV's own "no signal change"
+screensaver, which a wake lock alone can't touch), and a one-time fullscreen prompt. Off by default: the
+admin turns it on from `/edit`, and an already-open TV tab picks up the change on its own next poll — no one
+has to touch the TV itself.
+
+**A genuine platform constraint, not a bug.** Browsers only grant Fullscreen from an actual user gesture,
+even though the trigger for wanting it here — a poll response — is fully automatic. There's no way around one
+tap on the TV's own device the first time; after that, the tab stays fullscreen for the rest of its life,
+since it's never reloaded.
 
 ---
 

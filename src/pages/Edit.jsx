@@ -7,6 +7,7 @@ import AdminMobileMenu from '../components/admin/AdminMobileMenu';
 import AdminHeader from '../components/admin/AdminHeader';
 import AdminCategoryPills from '../components/admin/AdminCategoryPills';
 import AddItemForm from '../components/admin/AddItemForm';
+import TvModeToggle from '../components/admin/TvModeToggle';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { DELI_API_ROOT } from '../Constants';
 import { getAuthToken, setAuthToken, clearAuthToken } from '../utils/authToken';
@@ -121,6 +122,8 @@ function Edit() {
                     <LoadingSpinner label="Loading menu..." />
                 ) : (
                     <>
+                        <TvModeToggle />
+
                         <AdminHeader
                             selectedKey={selectedKey}
                             itemCount={filteredItems.length}

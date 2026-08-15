@@ -10,6 +10,7 @@ import { prisma } from './prisma.js';
 import { formatMenuItem, CATEGORY_TO_GROUP_KEY, parsePricesFromBody } from './formatMenuItem.js';
 import { uploadImage } from './cloudinary.js';
 import { login, requireAuth } from './auth.js';
+import { getTvMode, setTvMode } from './settings.js';
 
 const app = express();
 app.use(cors());
@@ -19,6 +20,12 @@ app.use(express.json());
 
 // POST /api/auth/login — used by Edit.jsx's login form.
 app.post('/api/auth/login', login);
+
+// GET/PUT /api/settings/tv-mode — the in-store TV display toggle. GET is
+// public (polled by whatever's showing /sandwiches or /items on the actual
+// TVs); PUT is the admin-only on/off switch in Edit.jsx.
+app.get('/api/settings/tv-mode', getTvMode);
+app.put('/api/settings/tv-mode', requireAuth, setTvMode);
 
 // memoryStorage keeps the uploaded file as a Buffer in req.file instead of
 // writing it to disk — we forward that buffer straight to Cloudinary, so

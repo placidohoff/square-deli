@@ -578,6 +578,60 @@ ul{
   color: #1c1917;
 }
 
+.tv-mode-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid #e7e5e4;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.tv-mode-toggle-label {
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.tv-mode-toggle-hint {
+  color: #78716c;
+  font-size: 0.82rem;
+  margin-top: 0.15rem;
+}
+
+.tv-mode-toggle-switch {
+  flex-shrink: 0;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: #d6d3d1;
+  padding: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.tv-mode-toggle-switch.on {
+  background: #f2600c;
+  justify-content: flex-end;
+}
+
+.tv-mode-toggle-switch:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.tv-mode-toggle-knob {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -1045,4 +1099,49 @@ ul{
   .admin-mobile-menu {
     display: block;
   }
+}
+
+/* ===== TV display mode (/sandwiches, /items) ===== */
+
+/* A slow, low-key sweep is enough real pixel motion to keep a TV's own
+   "no signal change" screensaver from kicking in, on top of the Wake Lock
+   in useTvDisplayMode.js (which only covers OS/device-level sleep, not that
+   TV-side behavior). `left` over `transform` here since the exact
+   viewport-relative start/end points were easier to reason about than
+   working them out in transform percentages — performance isn't a concern
+   for one slow animation on an otherwise-idle kiosk page. */
+.tv-mode-motion-bar {
+  position: fixed;
+  bottom: 0;
+  height: 3px;
+  width: 30%;
+  background: #f2600c;
+  animation: tv-mode-sweep 10s linear infinite;
+  z-index: 1500;
+  pointer-events: none;
+}
+
+@keyframes tv-mode-sweep {
+  0%   { left: -30%; }
+  100% { left: 100%; }
+}
+
+/* Browsers only grant Fullscreen from a real user gesture, so this can't be
+   skipped even though tv-mode itself is fully remote-controlled — one tap on
+   the TV's own device, then it stays fullscreen for the rest of the tab's
+   life. */
+.tv-mode-tap-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 1.75rem;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+  padding: 2rem;
 }
