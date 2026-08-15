@@ -276,6 +276,10 @@ implicit in a dashboard setting nobody documented.
   corrupt data rather than visibly crash.
 - **No image optimization pipeline beyond Cloudinary's defaults.** Not a current problem, but worth revisiting
   if photo count or traffic grows enough for it to matter.
+- **Prisma Client generation on Render isn't reliably automatic.** Learned the hard way (§13's incident):
+  `npm install` alone doesn't guarantee the generated client picks up a schema change across cached deploys.
+  `prisma generate` is now explicit in `prisma:deploy`, but any future schema change should still confirm the
+  live client actually has the new model before considering the migration done.
 
 ## 13. Addendum: TV display mode
 
@@ -307,6 +311,15 @@ has to touch the TV itself.
 even though the trigger for wanting it here — a poll response — is fully automatic. There's no way around one
 tap on the TV's own device the first time; after that, the tab stays fullscreen for the rest of its life,
 since it's never reloaded.
+
+**Incident, same day.** The migration applied to Postgres cleanly, but Render's generated Prisma Client
+didn't pick up the new model — `npm install` alone doesn't reliably re-trigger Prisma's postinstall client
+generation across Render's cached deploys (see §10). Every request touching `prisma.displaySettings` crashed
+the process, which took the *entire* backend down in a crash loop, not just the new endpoints — surfacing to
+users as login failures and CORS errors that had nothing to do with auth or CORS. (A browser reports a
+missing `Access-Control-Allow-Origin` header when a request never reaches the app at all — here, Render's own
+502 page was answering instead.) Fixed by making client generation an explicit step in the deploy script
+rather than depending on the implicit hook: `prisma:deploy` is now `prisma generate && prisma migrate deploy`.
 
 ---
 
